@@ -1,0 +1,19 @@
+name: Проверка решателя
+on:
+  push:
+    paths:
+      - "planner.js"
+      - "scanner.js"
+      - "journal.js"
+      - "tests/planner tests.js"
+      - ".github/workflows/planner tests.yml"
+  workflow_dispatch:
+jobs:
+  planner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node "tests/planner tests.js"
