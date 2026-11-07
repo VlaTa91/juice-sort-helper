@@ -50,6 +50,7 @@ body>#board .item.pour-target .tube-label{background:#50eaff;color:#092930;font-
 #calibrationCard .calibrationControls{display:flex;gap:7px;flex-wrap:wrap;margin:11px 0}
 #calibrationCard .calibrationControls button{flex:1;min-width:120px}
 #calibrationPreviewWrap{text-align:center;margin:12px 0}
+.calibrationMark[hidden]{display:none!important}
 #calibrationFrame{position:relative;display:inline-block;line-height:0;border:2px solid #7d9f8b;border-radius:8px;overflow:hidden;max-width:100%}
 #calibrationImage{display:block;max-width:100%;max-height:51dvh;width:auto;height:auto;cursor:crosshair;touch-action:manipulation}
 .calibrationMark{position:absolute;display:grid;place-items:center;width:27px;height:27px;border:2px solid #fff;border-radius:50%;background:#d44818;color:#fff;font:800 15px system-ui;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 0 4px #0009}
@@ -175,7 +176,7 @@ function openCalibration(reason){
  if(!shotImage)return;
  const panel=$('calibrationPanel');
  $('calibrationImage').src=$('shotPreview').src;
- $('calibrationCount').value=String(calibrationMode?.count||state.length===8?8:12);
+ $('calibrationCount').value=String(calibrationMode?.count || (state.length===8 ? 8 : 12));
  panel.hidden=false;
  $('calibrationProgress').textContent=reason+' Отметь положение двух колбочек на скриншоте.';
  drawCalibrationMarks();
