@@ -19,17 +19,27 @@ function autoRecognizeGame(canvas){
   edges[x]=sum/108;
  }
  function edgeAt(x){let best=0;for(let i=Math.max(0,Math.round(x)-3);i<=Math.min(width-2,Math.round(x)+3);i++)best=Math.max(best,edges[i]);return best}
+
+ const topEdges=[];
+ for(let x=0;x<width-1;x++){
+   let sum=0;
+   for(let y=245;y<330;y++)sum+=Math.abs(intensity(x+1,y)-intensity(x,y));
+   topEdges[x]=sum/85;
+ }
+ function topEdgeAt(x){let best=0;for(let j=Math.max(0,Math.round(x)-3);j<=Math.min(width-2,Math.round(x)+3);j++)best=Math.max(best,topEdges[j]);return best}
  const layouts=[];
- for(let n=2;n<=6;n++){
-  const centers=Array.from({length:n},(_,i)=>175+(i-(n-1)/2)*50);
-  const strength=centers.map(x=>Math.min(edgeAt(x-16),edgeAt(x+16)));
-  const average=strength.reduce((a,b)=>a+b,0)/n;
-  const min=Math.min(...strength);
-  if(min>=8)layouts.push({n,centers,average,min,score:average+1.5*n});
+ for(let n=2;n<=6;n++)for(let xshift=-18;xshift<=18;xshift+=3){
+   const centers=Array.from({length:n},(_,i)=>175+xshift+(i-(n-1)/2)*50);
+   const strength=centers.map(x=>Math.min(edgeAt(x-16),edgeAt(x+16)));
+   const average=strength.reduce((a,b)=>a+b,0)/n;
+   const min=Math.min(...strength);
+   if(min<8)continue;
+   const topStrength=[50,100,150,200,250,300].map(x=>Math.min(topEdgeAt(x+xshift-18),topEdgeAt(x+xshift+18)));
+   const topAverage=topStrength.reduce((a,b)=>a+b,0)/6;
+   layouts.push({n,centers,xshift,average,min,topAverage,score:average+1.5*n+topAverage*1.2});
  }
  layouts.sort((a,b)=>b.score-a.score);
  if(!layouts.length)return {valid:false,reason:'Не найдены границы нижнего ряда колбочек'};
- const chosen=layouts[0],xs=[50,100,150,200,250,300,...chosen.centers];
  const reference={
   '0':[[148,133,74],[120,116,80],[125,109,74],[119,97,47]],
   '1':[[134,158,195],[112,130,175],[97,135,159],[81,120,151]],
@@ -54,11 +64,13 @@ function autoRecognizeGame(canvas){
    }
   return bestDist>53?'X':bestType;
  }
+ function scanCandidate(chosen,shiftX,shiftY){
+ const xs=[50,100,150,200,250,300,...chosen.centers.map(x=>x-chosen.xshift)];
  const topYs=[257,285,313,338],bottomYs=[430,458,483,503],state=[],rawRows=[];
  let bad=0,visible=0,hidden=0,filled=0;
  for(let i=0;i<xs.length;i++){
   const yy=i<6?topYs:bottomYs;
-  const slots=yy.map(y=>classify(medianRGB(xs[i],y)));
+  const slots=yy.map(y=>classify(medianRGB(xs[i]+shiftX,y+shiftY)));
   // A real stack cannot have its two lowest layers empty.
   // This also rejects floating in-game badges above empty tubes.
   if(slots[2]==='_'&&slots[3]==='_')slots.fill('_');
@@ -71,6 +83,16 @@ function autoRecognizeGame(canvas){
   state.push(tube);rawRows.push(slots);
  }
  // Fully open levels need their own brighter color references.
+ // On heavily hidden levels, foreign game overlays may cover masked layers.
+ // Preserve them as unknown; do not invent red/orange tiles under overlay badges.
+ if(hidden>0&&filled>=6&&hidden>=(filled-1)*3){
+   for(let i=0;i<state.length;i++){
+     const tube=state[i];
+     if(tube.length===4)state[i]=['?','?','?',tube[3]];
+   }
+   visible=state.reduce((n,t)=>n+t.filter(v=>v!=='?').length,0);
+   hidden=state.reduce((n,t)=>n+t.filter(v=>v==='?').length,0);
+ }
  if(hidden===0&&chosen.n===3&&state.reduce((n,t)=>n+t.length,0)===28){
   const visiblePalette={
    '9':[[158,156,152],[159,158,154],[152,153,149],[149,147,144]],
@@ -94,7 +116,7 @@ function autoRecognizeGame(canvas){
   for(let i=0;i<9;i++){
    if(rawRows[i].every(t=>t==='_')){state[i]=[];continue}
    const ys=i<6?topYs:[418,448,476,501];
-   state[i]=ys.map(y=>visibleType(medianRGB(xs[i],y))).reverse();
+   state[i]=ys.map(y=>visibleType(medianRGB(xs[i]+shiftX,y+shiftY))).reverse();
    if(state[i].includes('X'))bad++;
   }
   const counts={};
@@ -102,7 +124,26 @@ function autoRecognizeGame(canvas){
   if(Object.values(counts).some(n=>n!==4))bad++;
  }
  const unknownTop=state.filter(t=>t.length&&t.at(-1)==='?').length;
- const valid=bad===0&&unknownTop===0&&filled>=2&&visible>0;
+ let mismatch=0;
+ if(hidden===0&&chosen.n===3){
+   const counts={};state.flat().forEach(t=>counts[t]=(counts[t]||0)+1);
+   mismatch=Object.values(counts).some(c=>c!==4)?1:0;
+ }
+ const valid=bad===0&&unknownTop===0&&mismatch===0&&filled>=2&&visible>0;
  return {valid,state,count:xs.length,bottomCount:chosen.n,visible,hidden,filled,unknownTop,bad,
-  layoutScore:chosen.score,reason:valid?'':'Некоторые символы не удалось уверенно прочитать'};
+  layoutScore:chosen.score,reason:valid?'':'Некоторые символы не удалось уверенно прочитать',shiftX,shiftY};
+ }
+ let best=null;
+ const shifts=[0,-3,3,-6,6,-9,9,-12,12,-16,16];
+ for(const chosen of layouts.slice(0,24)){
+   for(const dy of shifts){
+     for(const dX of [0,-3,3]){
+       const candidate=scanCandidate(chosen,chosen.xshift+dX,dy);
+       if(candidate.valid)return candidate;
+       const score=candidate.bad*100+candidate.unknownTop*70+Math.abs(dX)+Math.abs(dy)+Math.max(0,layouts[0].score-chosen.score);
+       if(!best||score<best.score)best={...candidate,score};
+     }
+   }
+ }
+ return best||{valid:false,reason:'Изображение не удалось распознать'};
 }
