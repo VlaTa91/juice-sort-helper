@@ -85,11 +85,25 @@ function autoRecognizeGame(canvas){
  // Fully open levels need their own brighter color references.
  // On heavily hidden levels, foreign game overlays may cover masked layers.
  // Preserve them as unknown; do not invent red/orange tiles under overlay badges.
- if(hidden>0&&filled>=6&&hidden>=(filled-1)*3){
+ // For the initial 12-tube masked stage, only the upper token is visible.
+ // Infer the *hidden status*, never a concealed symbol/color. A compressed
+ // screenshot may make concealed brown tiles look like colored symbols.
+ const fullTubes=state.filter(t=>t.length===4);
+ const maskedStart=chosen.n===6&&state.length===12&&filled===10
+   &&fullTubes.length===10&&hidden>=8
+   &&fullTubes.every(t=>t[3]!=='X'&&t[3]!=='?'&&t[3]!=='_');
+ if(maskedStart){
+   for(let i=0;i<state.length;i++)if(state[i].length===4){
+     state[i]=['?','?','?',state[i][3]];
+   }
+   bad=0;visible=10;hidden=30;
+ }else if(hidden>0&&filled>=6&&hidden>=(filled-1)*3){
    for(let i=0;i<state.length;i++){
      const tube=state[i];
-     if(tube.length===4)state[i]=['?','?','?',tube[3]];
+     if(tube.length===4&&tube[3]!=='X'&&tube[3]!=='?')
+       state[i]=['?','?','?',tube[3]];
    }
+   bad=state.some(t=>t.includes('X'))?bad:0;
    visible=state.reduce((n,t)=>n+t.filter(v=>v!=='?').length,0);
    hidden=state.reduce((n,t)=>n+t.filter(v=>v==='?').length,0);
  }
@@ -131,10 +145,12 @@ function autoRecognizeGame(canvas){
  }
  const valid=bad===0&&unknownTop===0&&mismatch===0&&filled>=2&&visible>0;
  return {valid,state,count:xs.length,bottomCount:chosen.n,visible,hidden,filled,unknownTop,bad,
-  layoutScore:chosen.score,reason:valid?'':'Некоторые символы не удалось уверенно прочитать',shiftX,shiftY};
+  layoutScore:chosen.score,
+  reason:valid?'':('Нужно проверить символы: '+bad+', нераспознанных верхних слоёв: '+unknownTop),
+  shiftX,shiftY};
  }
  let best=null;
- const shifts=[0,-3,3,-6,6,-9,9,-12,12,-16,16];
+ const shifts=[0,-3,3,-6,6,-9,9,-12,12,-16,16,-20,20,-24,24,-28,28];
  for(const chosen of layouts.slice(0,24)){
    for(const dy of shifts){
      for(const dX of [0,-3,3]){
