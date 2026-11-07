@@ -62,7 +62,28 @@ function autoRecognizeGame(canvas){
     const d=Math.hypot(r-p[0],g-p[1],b-p[2]);
     if(d<bestDist){bestDist=d;bestType=name}
    }
+  // A gray dash must be genuinely neutral. A colored tile's edge can
+  // otherwise match the old gray RGB reference (notably pink tube #7).
+  if(bestType==='9'&&Math.max(r,g,b)-Math.min(r,g,b)>24)return 'X';
   return bestDist>53?'X':bestType;
+ }
+ // Read both clean side margins, avoiding the symbol drawn in the centre.
+ // Using a single left margin previously confused pink with gray when
+ // slight screenshot translations placed the sample on the glass border.
+ function sampleTile(x,y){
+  const left=medianRGB(x,y),right=medianRGB(x+17,y);
+  const a=classify(left),b=classify(right);
+  if(a===b)return a;
+  if(a==='X')return b;
+  if(b==='X')return a;
+  if(a==='?'||a==='_')return b==='?'||b==='_'?'X':b;
+  if(b==='?'||b==='_')return a;
+  const distances=Object.entries(reference).map(([type,refs])=>({
+   type,
+   dist:[left,right].reduce((total,rgb)=>total+
+    Math.min(...refs.map(p=>Math.hypot(rgb[0]-p[0],rgb[1]-p[1],rgb[2]-p[2]))),0)
+  })).sort((a,b)=>a.dist-b.dist);
+  return distances[0].dist<100?distances[0].type:'X';
  }
  function scanCandidate(chosen,shiftX,shiftY){
  const xs=[50,100,150,200,250,300,...chosen.centers.map(x=>x-chosen.xshift)];
@@ -70,7 +91,7 @@ function autoRecognizeGame(canvas){
  let bad=0,visible=0,hidden=0,filled=0;
  for(let i=0;i<xs.length;i++){
   const yy=i<6?topYs:bottomYs;
-  const slots=yy.map(y=>classify(medianRGB(xs[i]+shiftX,y+shiftY)));
+  const slots=yy.map(y=>sampleTile(xs[i]+shiftX,y+shiftY));
   // The first layer of the lower row is around y=416. The previous
   // y=430 sample hit the hidden brown cell below the pink/orange tile.
   // A margin inside the tile is essential for reliable color recognition.
