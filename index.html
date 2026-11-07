@@ -334,6 +334,7 @@ function hint(){
    if(unknownTop(state)){render();const ix=state.findIndex(t=>t.at(-1)==='?');if(ix>=0){editingTarget=[ix,state[ix].length-1];$('palette').classList.add('editing');$('quickHint').textContent='Выбери цвет';msg('Колбочка №'+(ix+1)+': какой цвет открылся? Нажми символ в палитре.')}return}
    const analysis=JuicePlanner.choose(state,{capacity:cap(),simulations:340,depth:28,visited:history});
    if(!analysis.move){
+     if(analysis.reason==='no-legal'||analysis.reason==='cycle-only')JuiceJournal.finish('blocked',state);
      render();save();
      msg(analysis.reason==='invalid-counts'
        ?'Не совпадает количество цветов и скрытых слоёв. Проверь поле; переливать пока нельзя.'
