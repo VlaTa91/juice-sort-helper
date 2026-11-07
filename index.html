@@ -1,4 +1,4 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#142b24"><link rel="manifest" href="manifest.webmanifest"><title>Соковое испытание · ручная версия 32</title><style>body{margin:0;background:#10231e;color:#f3f5ee;font:16px system-ui} main{zoom:.6}main{max-width:760px;margin:auto;padding:16px}h1{font-size:25px}button,select,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #65786b;background:#284338;color:white}button{cursor:pointer}button:disabled{opacity:.4}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 5px}.tube{border:2px solid #819b91;border-radius:7px 7px 18px 18px;height:155px;display:flex;flex-direction:column-reverse;overflow:hidden;background:#1d302a;position:relative}.tube.active{outline:3px solid #f9d76b}.layer{flex:1;border-bottom:1px solid #0004;display:grid;place-items:center;color:#fff;text-shadow:0 1px 3px #000;font-weight:700}.tube-label{text-align:center;margin-bottom:5px;font-size:13px}.item{min-width:0}.palette{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.swatch{width:43px;height:43px;padding:0;border:3px solid transparent;font-size:25px;font-weight:800;color:#fff;text-shadow:0 1px 3px #222,0 0 3px #222}.swatch.sel{border-color:white}#message{padding:12px;background:#25453a;border-radius:10px;min-height:40px}small{color:#b5c6bd} @media(max-width:420px){.tube{height:132px}.board{gap:9px 3px}}#stepPanel{margin:12px 0;padding:13px 15px;background:#284338;border:2px solid #8fbca3;border-radius:13px}#stepPanel strong{display:block;font-size:31px;line-height:1.15;color:#fff;margin-bottom:9px}#stepInfo{font-size:18px;line-height:1.4}#stepPanel[hidden]{display:none}.tube-label-from,.tube-label-to{font-weight:900!important;font-size:15px!important;border-radius:5px;color:#10231e!important}.tube-label-from{background:#ffcf58}.tube-label-to{background:#83d4ff}.board{row-gap:26px}.item{transition:transform .2s ease}.item.pour-source{transform:translateY(-16px);filter:drop-shadow(0 5px 4px #0009)}.item.pour-source .tube{outline:3px solid #ffcf58;outline-offset:2px}.tube.from,.tube.to{outline:none}#manualBar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:9px 0}#manualBar button{padding:7px}#stepPanel[hidden]{display:none}#stepPanel{display:none!important}/* Compact gameplay: the board is primary; recurring actions float at the thumb position. */
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#142b24"><link rel="manifest" href="manifest.webmanifest"><title>Соковое испытание · ручная версия 33</title><style>body{margin:0;background:#10231e;color:#f3f5ee;font:16px system-ui} main{zoom:.6}main{max-width:760px;margin:auto;padding:16px}h1{font-size:25px}button,select,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #65786b;background:#284338;color:white}button{cursor:pointer}button:disabled{opacity:.4}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 5px}.tube{border:2px solid #819b91;border-radius:7px 7px 18px 18px;height:155px;display:flex;flex-direction:column-reverse;overflow:hidden;background:#1d302a;position:relative}.tube.active{outline:3px solid #f9d76b}.layer{flex:1;border-bottom:1px solid #0004;display:grid;place-items:center;color:#fff;text-shadow:0 1px 3px #000;font-weight:700}.tube-label{text-align:center;margin-bottom:5px;font-size:13px}.item{min-width:0}.palette{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.swatch{width:43px;height:43px;padding:0;border:3px solid transparent;font-size:25px;font-weight:800;color:#fff;text-shadow:0 1px 3px #222,0 0 3px #222}.swatch.sel{border-color:white}#message{padding:12px;background:#25453a;border-radius:10px;min-height:40px}small{color:#b5c6bd} @media(max-width:420px){.tube{height:132px}.board{gap:9px 3px}}#stepPanel{margin:12px 0;padding:13px 15px;background:#284338;border:2px solid #8fbca3;border-radius:13px}#stepPanel strong{display:block;font-size:31px;line-height:1.15;color:#fff;margin-bottom:9px}#stepInfo{font-size:18px;line-height:1.4}#stepPanel[hidden]{display:none}.tube-label-from,.tube-label-to{font-weight:900!important;font-size:15px!important;border-radius:5px;color:#10231e!important}.tube-label-from{background:#ffcf58}.tube-label-to{background:#83d4ff}.board{row-gap:26px}.item{transition:transform .2s ease}.item.pour-source{transform:translateY(-16px);filter:drop-shadow(0 5px 4px #0009)}.item.pour-source .tube{outline:3px solid #ffcf58;outline-offset:2px}.tube.from,.tube.to{outline:none}#manualBar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:9px 0}#manualBar button{padding:7px}#stepPanel[hidden]{display:none}#stepPanel{display:none!important}/* Compact gameplay: the board is primary; recurring actions float at the thumb position. */
 main{padding-bottom:130px}
 h1{margin:3px 0 9px;font-size:24px}
 #quickActions{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:999;display:flex;align-items:center;gap:9px;background:#132820ed;border:1px solid #5b796b;border-radius:22px;padding:9px;box-shadow:0 5px 24px #0009}
@@ -55,7 +55,54 @@ body>#board .item.pour-target .tube-label{background:#50eaff;color:#092930;font-
 #calibrationImage{display:block;max-width:100%;max-height:51dvh;width:auto;height:auto;cursor:crosshair;touch-action:manipulation}
 .calibrationMark{position:absolute;display:grid;place-items:center;width:27px;height:27px;border:2px solid #fff;border-radius:50%;background:#d44818;color:#fff;font:800 15px system-ui;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 0 4px #0009}
 #calibrationProgress{font-size:14px;min-height:25px;color:#e5eacb}
-</style></head><body><main><h1>Соковое испытание <small>Ручная v32</small></h1><div class="controls"><label>Колбочек <input id="count" type="number" min="3" max="20" value="12" style="width:65px"></label><label>Вместимость <input id="capacity" type="number" min="2" max="8" value="4" style="width:55px"></label><button id="reset">Новый уровень</button></div><div class="controls"><button id="mode">Режим: ввод цветов</button><button id="capture">Наблюдать за экраном (ПК)</button><button id="stopCapture" hidden>Остановить наблюдение</button></div><video id="screen" autoplay muted playsinline hidden style="width:100%;max-height:250px;object-fit:contain"></video><section class="uploadArea"><strong>Распознавание по скриншоту</strong><div class="controls"><label style="background:#284338;padding:10px;border-radius:9px;cursor:pointer">📷 Загрузить скриншот<input type="file" id="uploadShot" accept="image/*" style="display:none"></label><button id="scanShot" hidden disabled>Распознать 12 колбочек</button></div><img id="shotPreview" alt="Загруженный скриншот" hidden style="max-height:240px;max-width:100%;border-radius:8px"><div id="scanReport" style="font-size:13px;color:#c4d9ce;margin-top:6px">Распознавание рассчитано на полноэкранные скриншоты Ant Legion с расположением 6 + 6 колбочек. Проверь результат перед подсказкой.</div></section><div id="quickActions"><button id="quickUndo" title="Отменить последний ход" aria-label="Отменить последний ход" hidden>↶</button><button id="quickHint" title="Показать следующий ход">Показать ход</button></div><div class="palette" id="palette"></div><div id="manualBar"><button id="manualMode" hidden>✏️ Исправить слой</button><small id="editStatus" hidden></small></div><div id="stepPlaceholder"></div><div class="board" id="board"></div><div id="fieldCheck" role="status" style="padding:9px;margin:8px 0;background:#263e34;border-radius:9px;font-size:13px"></div><div id="stepPanel" hidden><strong id="stepTitle">Следующий ход</strong><div id="stepInfo"></div><div class="controls"><button id="stepDone" hidden>✓ Сделала ход</button><button id="stepSkip" hidden>↻ Пересчитать</button></div></div><div class="controls"><button id="hint" hidden>Подсказать ход</button><button id="undo">Отменить</button><button id="apply" hidden>Выполнить подсказку</button></div><div id="message" role="status">Введи верхние цвета, оставив нижние как ?. Нажми «Подсказать ход».</div></main><div id="statusToast" role="status" aria-live="polite" hidden></div>
+
+/* One-screen PWA layout: the board and the calibration dialog fit the viewport. */
+html,body{height:100%;width:100%;overflow:hidden!important;overscroll-behavior:none}
+body{height:100dvh;touch-action:pan-x}
+body>#board{
+ position:fixed!important;box-sizing:border-box!important;
+ left:50%!important;top:calc((100dvh - 165px - min(440px, calc(100dvh - 185px)))/2)!important;
+ bottom:auto!important;transform:translateX(-50%)!important;
+ width:min(96vw,420px)!important;height:min(440px, calc(100dvh - 185px))!important;
+ display:grid!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;
+ gap:clamp(5px,1.2dvh,14px) 4px!important;overflow:visible;
+}
+body>#board .item{display:flex;flex-direction:column;min-height:0;min-width:0}
+body>#board .tube{height:auto!important;flex:1;min-height:0;box-sizing:border-box}
+body>#board .tube-label{font-size:clamp(11px,1.8dvh,14px);line-height:1.2;margin:0 0 3px}
+body>#board .layer{min-height:0;font-size:clamp(11px,2.2dvh,17px)}
+#quickActions{min-height:67px;padding:7px 8px calc(7px + env(safe-area-inset-bottom));}
+#quickActions #uploadBottom,#quickActions #quickHint{min-height:49px;font-size:clamp(12px,3.6vw,16px)}
+#statusToast{font-size:clamp(12px,2.8vw,15px)!important;line-height:1.3!important;
+ bottom:calc(76px + env(safe-area-inset-bottom))!important;
+ max-height:73px!important;overflow:hidden!important;padding:7px 9px!important}
+#calibrationPanel{padding:5px!important;overflow:hidden!important;align-items:stretch!important;overscroll-behavior:contain}
+#calibrationCard{height:100%;min-height:0;max-width:520px!important;
+ display:flex;flex-direction:column;justify-content:flex-start;
+ overflow:hidden!important;padding:8px 10px!important}
+#calibrationCard h2{font-size:clamp(15px,4vw,20px)!important;margin:0 0 2px}
+#calibrationCard p{font-size:clamp(11px,3vw,13px)!important;
+ line-height:1.25!important;margin:3px 0!important}
+#calibrationCard label{font-size:12px;display:flex;align-items:center;gap:7px}
+#calibrationCard select{font-size:12px;padding:5px;min-height:32px;flex:1;min-width:0}
+#calibrationPreviewWrap{flex:1 1 auto;min-height:0;
+ display:flex;align-items:center;justify-content:center;margin:5px 0!important;overflow:hidden}
+#calibrationFrame{max-height:100%;max-width:100%;flex-shrink:1}
+#calibrationImage{max-height:calc(100dvh - 200px)!important;max-width:calc(100vw - 32px)!important;object-fit:contain}
+#calibrationProgress{flex-shrink:0;min-height:0!important;font-size:12px!important;
+ line-height:1.25;max-height:45px;overflow:hidden}
+#calibrationCard .calibrationControls{display:flex;flex-shrink:0;flex-wrap:nowrap;gap:5px;margin:5px 0 0!important}
+#calibrationCard .calibrationControls button{flex:1 1 0;min-width:0!important;
+ font-size:clamp(11px,3vw,14px);line-height:1.1;min-height:43px;padding:6px 3px}
+#calibrationCard #calibrationRun{flex:1.55 1 0}
+@media(max-height:530px){
+ #calibrationCard h2{font-size:14px!important}
+ #calibrationCard p{font-size:11px!important;margin:2px 0!important}
+ #calibrationImage{max-height:calc(100dvh - 166px)!important}
+ #calibrationCard label{font-size:11px}
+ #calibrationCard .calibrationControls button{min-height:36px}
+}
+</style></head><body><main><h1>Соковое испытание <small>Ручная v33</small></h1><div class="controls"><label>Колбочек <input id="count" type="number" min="3" max="20" value="12" style="width:65px"></label><label>Вместимость <input id="capacity" type="number" min="2" max="8" value="4" style="width:55px"></label><button id="reset">Новый уровень</button></div><div class="controls"><button id="mode">Режим: ввод цветов</button><button id="capture">Наблюдать за экраном (ПК)</button><button id="stopCapture" hidden>Остановить наблюдение</button></div><video id="screen" autoplay muted playsinline hidden style="width:100%;max-height:250px;object-fit:contain"></video><section class="uploadArea"><strong>Распознавание по скриншоту</strong><div class="controls"><label style="background:#284338;padding:10px;border-radius:9px;cursor:pointer">📷 Загрузить скриншот<input type="file" id="uploadShot" accept="image/*" style="display:none"></label><button id="scanShot" hidden disabled>Распознать 12 колбочек</button></div><img id="shotPreview" alt="Загруженный скриншот" hidden style="max-height:240px;max-width:100%;border-radius:8px"><div id="scanReport" style="font-size:13px;color:#c4d9ce;margin-top:6px">Распознавание рассчитано на полноэкранные скриншоты Ant Legion с расположением 6 + 6 колбочек. Проверь результат перед подсказкой.</div></section><div id="quickActions"><button id="quickUndo" title="Отменить последний ход" aria-label="Отменить последний ход" hidden>↶</button><button id="quickHint" title="Показать следующий ход">Показать ход</button></div><div class="palette" id="palette"></div><div id="manualBar"><button id="manualMode" hidden>✏️ Исправить слой</button><small id="editStatus" hidden></small></div><div id="stepPlaceholder"></div><div class="board" id="board"></div><div id="fieldCheck" role="status" style="padding:9px;margin:8px 0;background:#263e34;border-radius:9px;font-size:13px"></div><div id="stepPanel" hidden><strong id="stepTitle">Следующий ход</strong><div id="stepInfo"></div><div class="controls"><button id="stepDone" hidden>✓ Сделала ход</button><button id="stepSkip" hidden>↻ Пересчитать</button></div></div><div class="controls"><button id="hint" hidden>Подсказать ход</button><button id="undo">Отменить</button><button id="apply" hidden>Выполнить подсказку</button></div><div id="message" role="status">Введи верхние цвета, оставив нижние как ?. Нажми «Подсказать ход».</div></main><div id="statusToast" role="status" aria-live="polite" hidden></div>
 <div id="calibrationPanel" hidden role="dialog" aria-modal="true" aria-labelledby="calibrationTitle">
  <div id="calibrationCard">
   <h2 id="calibrationTitle">Настройка распознавания</h2>
@@ -178,8 +225,8 @@ function openCalibration(reason){
  $('calibrationImage').src=$('shotPreview').src;
  $('calibrationCount').value=String(calibrationMode?.count || (state.length===8 ? 8 : 12));
  panel.hidden=false;
- $('calibrationProgress').textContent=reason+' Отметь положение двух колбочек на скриншоте.';
  drawCalibrationMarks();
+ $('calibrationProgress').textContent=reason+(calibrationPoints.length===2?' Измени точки или попробуй снова.':' Отметь две колбочки на скриншоте.');
 }
 function drawCalibrationMarks(){
  for(let i=0;i<2;i++){const mark=$('calibrationMark'+(i+1)),point=calibrationPoints[i];mark.hidden=!point;if(point){mark.style.left=point.x*100+'%';mark.style.top=point.y*100+'%'}}
@@ -196,13 +243,13 @@ $('calibrationImage').onclick=e=>{
 };
 $('calibrationReset').onclick=()=>{calibrationPoints=[];calibrationMode=null;$('calibrationProgress').textContent='Нажми центр первой колбочки верхнего ряда.';drawCalibrationMarks()};
 $('calibrationClose').onclick=()=>{$('calibrationPanel').hidden=true};
-$('calibrationRun').onclick=()=>{
+$('calibrationRun').onclick=async()=>{
  if(calibrationPoints.length!==2)return;
  const profile={w:shotImage.width,h:shotImage.height,count:Number($('calibrationCount').value),points:calibrationPoints.map(p=>({...p}))};
  if(profile.points[1].x<=profile.points[0].x||profile.points[1].y<=profile.points[0].y){$('calibrationProgress').textContent='Вторая колбочка должна быть правее и ниже первой. Укажи заново.';return}
  calibrationMode=profile;
  $('calibrationProgress').textContent='Распознаю колбочки…';
- $('scanShot').click();
+ await scanCurrentShot();
 };
 
 const centersX=[50,100,150,200,250,302];
@@ -317,23 +364,32 @@ function readEightTubeBoard(canvas){
  const valid=!hasGap && Object.values(counts).every(n=>n===4)&&colored.length===24;
  return {state:next,valid,counts};
 }
-$('uploadShot').onchange=async e=>{let file=e.target.files?.[0];if(!file)return;e.target.value='';calibrationMode=null;calibrationPoints=[];$('calibrationPanel').hidden=true;msg('Скриншот загружается…');try{const url=URL.createObjectURL(file),img=new Image();await new Promise((ok,fail)=>{img.onload=ok;img.onerror=fail;img.src=url});shotImage=img;try{const saved=JSON.parse(localStorage.getItem('juice-calibration-v1')||'null');if(saved?.w===img.width&&saved?.h===img.height&&Array.isArray(saved.points)&&saved.points.length===2)calibrationMode=saved;}catch(e){}$('shotPreview').src=img.src;$('shotPreview').hidden=false;$('scanShot').disabled=false;$('scanReport').textContent='Изображение загружено ('+img.width+'×'+img.height+'). Распознавание запущено автоматически. Файл никуда не отправляется.';$('scanShot').click();}catch(err){$('scanReport').textContent='Не удалось открыть изображение: '+err.message}};
+$('uploadShot').onchange=async e=>{let file=e.target.files?.[0];if(!file)return;e.target.value='';calibrationMode=null;calibrationPoints=[];$('calibrationPanel').hidden=true;msg('Скриншот загружается…');try{const url=URL.createObjectURL(file),img=new Image();await new Promise((ok,fail)=>{img.onload=ok;img.onerror=fail;img.src=url});shotImage=img;try{const saved=JSON.parse(localStorage.getItem('juice-calibration-v1')||'null');if(saved?.w===img.width&&saved?.h===img.height&&Array.isArray(saved.points)&&saved.points.length===2)calibrationMode=saved;}catch(e){}$('shotPreview').src=img.src;$('shotPreview').hidden=false;$('scanShot').disabled=false;$('scanReport').textContent='Изображение загружено ('+img.width+'×'+img.height+'). Распознавание запущено автоматически. Файл никуда не отправляется.';await scanCurrentShot();}catch(err){$('scanReport').textContent='Не удалось открыть изображение: '+err.message}};
 function startAutoSolution(){
  msg('Колбочки распознаны. Рассчитываю первый ход…');
  // Give the browser a chance to paint the status before CPU-intensive search.
  requestAnimationFrame(()=>setTimeout(()=>{try{hint()}catch(error){msg('Ошибка при поиске хода: '+error.message)}},0));
 }
-$('scanShot').onclick=async()=>{
- if(!shotImage)return;
+let scanGeneration=0;
+$('scanShot').onclick=()=>scanCurrentShot();
+async function scanCurrentShot(){
+ if(!shotImage){msg('Сначала загрузи скриншот.');return}
+ const task=++scanGeneration;
  $('scanShot').disabled=true;
+ $('calibrationRun').disabled=true;
+ if(!$('calibrationPanel').hidden)$('calibrationProgress').textContent='Распознаю изображение…';
+ msg('Распознаю колбочки…');
+ await new Promise(resolve=>requestAnimationFrame(resolve));
+ if(task!==scanGeneration)return;
  try{
    const canvas=calibrationMode?calibratedCanvas(shotImage,calibrationMode):imageCanvas(shotImage),bottom=detectBottomTubes(canvas),forced=calibrationMode?.count||0;
+   if(task!==scanGeneration)return;
    if(forced===8 || (!forced && bottom.length===2 && bottom[0]===2 && bottom[1]===3)){
      const scan=readEightTubeBoard(canvas);
      if(!scan.valid){
        $('scanReport').textContent='Не удалось уверенно определить все 24 фишки. Проверь скриншот.';
        // Do not turn uncertain pixels into imaginary hidden layers.
-       msg('Не удалось надёжно распознать цвета. Укажи положение колбочек на снимке.');openCalibration('Не удалось распознать 8 колбочек.');return;
+       msg('Не удалось надёжно распознать цвета. Поправь точки или исходный скриншот.');openCalibration('Распознавание 8 колбочек не удалось.');return;
      }
      snapshot();state=scan.state;pending=null;plannedMoves=[];playMode=false;selectedTube=null;editingTarget=null;
      $('palette').classList.remove('editing');$('count').value=8;$('capacity').value=4;
@@ -341,6 +397,7 @@ $('scanShot').onclick=async()=>{
      if(calibrationMode)localStorage.setItem('juice-calibration-v1',JSON.stringify(calibrationMode));$('calibrationPanel').hidden=true;startAutoSolution();return;
    }
    const templates=await getTemplates(),next=Array.from({length:12},()=>[]);
+   if(task!==scanGeneration)return;
    let uncertain=[];
    for(let row=0;row<2;row++)for(let col=0;col<6;col++){
      const idx=row*6+col;let values=[];
@@ -354,15 +411,15 @@ $('scanShot').onclick=async()=>{
    }
    if(!forced && bottom.length!==6){
       $('scanReport').textContent='Не удалось определить расположение колбочек. Попробуй игровой скриншот целиком.';
-      msg('Не получилось определить расположение колбочек. Укажи их положение на снимке.');openCalibration('Автоматический поиск не сработал.');return;
+      msg('Положение колбочек отличается от эталона. Настрой его на скриншоте.');openCalibration('Не определилось расположение.');return;
    }
    snapshot();state=next;pending=null;plannedMoves=[];playMode=false;selectedTube=null;choice='?';
    $('count').value=12;$('capacity').value=4;render();save();if(calibrationMode)localStorage.setItem('juice-calibration-v1',JSON.stringify(calibrationMode));$('calibrationPanel').hidden=true;
    $('scanReport').textContent='12 колбочек. Проверь сомнительные клетки: '+uncertain.slice(0,12).join(', ');
    startAutoSolution();
- }catch(err){$('scanReport').textContent='Ошибка распознавания: '+err.message;msg('Ошибка: '+err.message);openCalibration('Проверь расположение колбочек.');}
- finally{$('scanShot').disabled=false}
-};
+ }catch(err){$('scanReport').textContent='Ошибка распознавания: '+err.message;msg('Ошибка: '+err.message);openCalibration('Ошибка: '+err.message+'.');}
+ finally{if(task===scanGeneration){$('scanShot').disabled=false;$('calibrationRun').disabled=calibrationPoints.length!==2}}
+}
 
 
 $('quickUndo').onclick=()=>{$('undo').click();showUndo()};$('quickHint').onclick=()=>{try{if(editingTarget&&unknownTop(state)){$('palette').classList.add('editing');return}if(pending){$('apply').click()}else hint()}catch(e){msg('Ошибка подсказки: '+e.message)}};$('manualMode').onclick=()=>{playMode=false;selectedTube=null;$('mode').textContent='Режим: ввод цветов';msg('Ручное исправление: выбери цвет или ? в палитре и коснись слоя. Скриншот не нужен.');render();};$('stepDone').onclick=()=>$('apply').click();$('stepSkip').onclick=hint;$('hint').onclick=()=>{hint();(pending?$('stepPanel'):$('message')).scrollIntoView({behavior:'smooth',block:'center'})};$('apply').onclick=()=>{if(!pending){hint();return}if(!legal(state).some(m=>m.join(',')===pending.join(','))){pending=null;plannedMoves=[];render();save();msg('Ход устарел: пересчитываю.');hint();return}snapshot();state=move(state,pending);pending=null;if(unknownTop(state)){plannedMoves=[];render();save();hint();return}if(plannedMoves.length){const candidate=plannedMoves.shift();if(legal(state).some(m=>m.join(',')===candidate.join(','))){pending=candidate;render();save();return}plannedMoves=[]}save();hint()};$('undo').onclick=()=>{if(!history.length)return;state=JSON.parse(history.pop());pending=null;plannedMoves=[];render();save();msg('Последнее действие отменено.')};$('reset').onclick=()=>{if(confirm('Очистить уровень?'))init(Math.min(20,Math.max(3,Number($('count').value)||12)),Math.min(8,Math.max(2,cap()||4)))};try{let old=JSON.parse(localStorage.getItem('juice-state-manual-v8'));if(old?.state?.length){$('capacity').value=old.capacity||4;$('count').value=old.state.length;state=old.state;history=Array.isArray(old.history)?old.history:[];plannedMoves=Array.isArray(old.plannedMoves)?old.plannedMoves:[];pending=Array.isArray(old.pending)?old.pending:null;if(pending&&!legal(state).some(m=>m.join(',')===pending.join(','))){pending=null;plannedMoves=[]}render()}else init()}catch{init()}$('stepPlaceholder').replaceWith($('stepPanel'));document.body.append($('quickActions'));document.body.append($('board'));const uploadLabel=$('uploadShot').closest('label');uploadLabel.id='uploadBottom';uploadLabel.firstChild.textContent='Загрузить скриншот';$('quickActions').prepend(uploadLabel);if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});</script></body></html>
