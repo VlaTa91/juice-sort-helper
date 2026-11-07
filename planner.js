@@ -38,7 +38,7 @@ if(b.length+n===cap&&b.length&&b.every(x=>x===v))score+=8;
 if(a.length===n&&b.length)score+=7;
 if(a.length===n&&!b.length)score-=18;
 if(a.length===cap&&a.every(x=>x===v)&&!b.length)score-=40;
-if(!b.length&&s.filter(t=>!t.length).length===1)score-=8;
+if(!b.length&&s.filter(t=>!t.length).length===1)score-=30;
 return score}
 function evaluate(obs,initialUnknown,cap,steps){if(solved(obs,cap))return 100-steps*.4;
 const moves=legal(obs,cap);if(!moves.length)return -95;
@@ -56,7 +56,13 @@ if(!best)break;
 const step=after(obs,world,best.m);obs=step.obs;world=step.world;seen.add(key(obs));turn++;
 }return evaluate(obs,initialUnknown,cap,turn)}
 function choose(s,options={}){
-const cap=options.capacity||4,available=legal(s,cap);
+const cap=options.capacity||4;
+const visited=new Set((options.visited||[]).map(v=>{
+try{return typeof v==="string"&&v.startsWith("[")?key(JSON.parse(v)):v}catch(e){return v}}));
+const allMoves=legal(s,cap);
+const fresh=allMoves.filter(m=>!visited.has(key(move(s,m))));
+const spare=s.filter(t=>!t.length).length,merges=fresh.filter(m=>s[m[1]].length>0);
+const available=spare===1&&merges.length?merges:fresh;
 if(!available.length)return {move:null,reason:"no-legal"};
 const distribution=deck(s,cap,options.palette||[]);
 if(!distribution)return {move:null,reason:"invalid-counts"};
@@ -67,7 +73,7 @@ const simulations=Math.max(40,Math.min(2000,options.simulations||340));
 const rng=rngSeed(options.seed??seedOf(s)),nodes=new Map(),rootKey=key(s),discount=.998;
 function getNode(obs){const k=key(obs);let node=nodes.get(k);
 if(!node){node={visits:0,actions:legal(obs,cap).map(m=>({m,n:0,q:0,dead:0,win:0,reveals:0}))};nodes.set(k,node)}return node}
-const root=getNode(s);
+const root=getNode(s);root.actions=root.actions.filter(a=>available.some(m=>m.join()===a.m.join()));
 for(let k=0;k<simulations;k++){
 const world0=sample(s,distribution.bag,rng);
 let obs=copy(s),world=world0,trail=[],seen=new Set([rootKey]),depth=0;
@@ -78,7 +84,7 @@ const untried=node.actions.filter(a=>a.n===0);
 if(untried.length){untried.sort((a,b)=>moveScore(obs,b.m,cap)-moveScore(obs,a.m,cap));
 action=untried[Math.floor(Math.pow(rng(),2)*Math.min(untried.length,3))]}
 else{let best=-Infinity;for(const a of node.actions){
-const optimism=a.q/a.n+8*Math.sqrt(Math.log(1+node.visits)/a.n)+moveScore(obs,a.m,cap)*.055;
+const optimism=a.q/a.n+48*Math.sqrt(Math.log(1+node.visits)/a.n)+moveScore(obs,a.m,cap)*.35;
 if(optimism>best){best=optimism;action=a}}}
 const step=after(obs,world,action.m);
 trail.push({node,action,revealed:step.reveal!==null});
