@@ -66,12 +66,15 @@ function autoRecognizeGame(canvas){
  }
  function scanCandidate(chosen,shiftX,shiftY){
  const xs=[50,100,150,200,250,300,...chosen.centers.map(x=>x-chosen.xshift)];
- const topYs=[257,285,313,338],bottomYs=[430,458,483,503],state=[],rawRows=[];
+ const topYs=[257,285,313,338],bottomYs=[416,445,473,501],state=[],rawRows=[];
  let bad=0,visible=0,hidden=0,filled=0;
  for(let i=0;i<xs.length;i++){
   const yy=i<6?topYs:bottomYs;
   const slots=yy.map(y=>classify(medianRGB(xs[i]+shiftX,y+shiftY)));
-  // A real stack cannot have its two lowest layers empty.
+  // The first layer of the lower row is around y=416. The previous
+  // y=430 sample hit the hidden brown cell below the pink/orange tile.
+  // A margin inside the tile is essential for reliable color recognition.
+ // A real stack cannot have its two lowest layers empty.
   // This also rejects floating in-game badges above empty tubes.
   if(slots[2]==='_'&&slots[3]==='_')slots.fill('_');
   let started=false,gap=false;
