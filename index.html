@@ -173,7 +173,7 @@ body>#board .item.pour-target .tube-label{
 #palette .palette-close{flex:0 0 100%;display:block;min-height:35px;
  border:1px solid #7b9787;border-radius:9px;background:#375548;
  color:#fff;font-size:14px;font-weight:700;margin:0;padding:6px!important}
-</style></head><body><main><h1>Соковое испытание <small>Ручная v43</small></h1><div class="controls"><label>Колбочек <input id="count" type="number" min="3" max="20" value="12" style="width:65px"></label><label>Вместимость <input id="capacity" type="number" min="2" max="8" value="4" style="width:55px"></label><button id="reset">Новый уровень</button></div><div class="controls"><button id="mode">Режим: ввод цветов</button><button id="capture">Наблюдать за экраном (ПК)</button><button id="stopCapture" hidden>Остановить наблюдение</button></div><video id="screen" autoplay muted playsinline hidden style="width:100%;max-height:250px;object-fit:contain"></video><section class="uploadArea"><strong>Распознавание по скриншоту</strong><div class="controls"><label style="background:#284338;padding:10px;border-radius:9px;cursor:pointer">📷 Загрузить скриншот<input type="file" id="uploadShot" aria-label="Выбрать файл изображения из памяти телефона" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></label><button id="scanShot" hidden disabled>Распознать 12 колбочек</button></div><img id="shotPreview" alt="Загруженный скриншот" hidden style="max-height:240px;max-width:100%;border-radius:8px"><div id="scanReport" style="font-size:13px;color:#c4d9ce;margin-top:6px">Распознавание рассчитано на полноэкранные скриншоты Ant Legion с расположением 6 + 6 колбочек. Проверь результат перед подсказкой.</div></section><div id="quickActions"><button id="quickUndo" title="Отменить последний ход" aria-label="Отменить последний ход" hidden>↶</button><button id="quickHint" title="Показать следующий ход">Показать ход</button></div><div class="palette" id="palette"></div><div id="manualBar"><button id="manualMode" hidden>✏️ Исправить слой</button><small id="editStatus" hidden></small></div><div id="stepPlaceholder"></div><div class="board" id="board"></div><div id="fieldCheck" role="status" style="padding:9px;margin:8px 0;background:#263e34;border-radius:9px;font-size:13px"></div><div id="stepPanel" hidden><strong id="stepTitle">Следующий ход</strong><div id="stepInfo"></div><div class="controls"><button id="stepDone" hidden>✓ Сделала ход</button><button id="stepSkip" hidden>↻ Пересчитать</button></div></div><div class="controls"><button id="hint" hidden>Подсказать ход</button><button id="undo">Отменить</button><button id="apply" hidden>Выполнить подсказку</button></div><div id="message" role="status">Введи верхние цвета, оставив нижние как ?. Нажми «Подсказать ход».</div></main><div id="statusToast" role="status" aria-live="polite" hidden></div><div id="scanError" role="alert" hidden><span id="scanErrorText"></span><button id="scanErrorClose" type="button" aria-label="Закрыть сообщение">×</button></div>
+</style></head><body><main><h1>Соковое испытание <small>Ручная v44</small></h1><div class="controls"><label>Колбочек <input id="count" type="number" min="3" max="20" value="12" style="width:65px"></label><label>Вместимость <input id="capacity" type="number" min="2" max="8" value="4" style="width:55px"></label><button id="reset">Новый уровень</button></div><div class="controls"><button id="mode">Режим: ввод цветов</button><button id="capture">Наблюдать за экраном (ПК)</button><button id="stopCapture" hidden>Остановить наблюдение</button></div><video id="screen" autoplay muted playsinline hidden style="width:100%;max-height:250px;object-fit:contain"></video><section class="uploadArea"><strong>Распознавание по скриншоту</strong><div class="controls"><label style="background:#284338;padding:10px;border-radius:9px;cursor:pointer">📷 Загрузить скриншот<input type="file" id="uploadShot" aria-label="Выбрать файл изображения из памяти телефона" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></label><button id="scanShot" hidden disabled>Распознать 12 колбочек</button></div><img id="shotPreview" alt="Загруженный скриншот" hidden style="max-height:240px;max-width:100%;border-radius:8px"><div id="scanReport" style="font-size:13px;color:#c4d9ce;margin-top:6px">Распознавание рассчитано на полноэкранные скриншоты Ant Legion с расположением 6 + 6 колбочек. Проверь результат перед подсказкой.</div></section><div id="quickActions"><button id="quickUndo" title="Отменить последний ход" aria-label="Отменить последний ход" hidden>↶</button><button id="quickHint" title="Показать следующий ход">Показать ход</button><button id="confirmScan" hidden title="Подтвердить частично распознанное поле">Проверила поле → ход</button></div><div class="palette" id="palette"></div><div id="manualBar"><button id="manualMode" hidden>✏️ Исправить слой</button><small id="editStatus" hidden></small></div><div id="stepPlaceholder"></div><div class="board" id="board"></div><div id="fieldCheck" role="status" style="padding:9px;margin:8px 0;background:#263e34;border-radius:9px;font-size:13px"></div><div id="stepPanel" hidden><strong id="stepTitle">Следующий ход</strong><div id="stepInfo"></div><div class="controls"><button id="stepDone" hidden>✓ Сделала ход</button><button id="stepSkip" hidden>↻ Пересчитать</button></div></div><div class="controls"><button id="hint" hidden>Подсказать ход</button><button id="undo">Отменить</button><button id="apply" hidden>Выполнить подсказку</button></div><div id="message" role="status">Введи верхние цвета, оставив нижние как ?. Нажми «Подсказать ход».</div></main><div id="statusToast" role="status" aria-live="polite" hidden></div><div id="scanError" role="alert" hidden><span id="scanErrorText"></span><button id="scanErrorClose" type="button" aria-label="Закрыть сообщение">×</button></div>
 <div id="calibrationPanel" hidden role="dialog" aria-modal="true" aria-labelledby="calibrationTitle">
  <div id="calibrationCard">
   <h2 id="calibrationTitle">Настройка распознавания</h2>
@@ -592,6 +592,7 @@ $('uploadShot').onchange=async e=>{let file=e.target.files?.[0];if(!file)return;
  state=[];history=[];pending=null;plannedMoves=[];playMode=false;selectedTube=null;editingTarget=null;
  $('palette').classList.remove('editing');
  $('quickHint').disabled=true;
+ $('confirmScan').hidden=true;
  render();save();
  msg('Скриншот загружается…');try{const url=URL.createObjectURL(file),img=new Image();await new Promise((ok,fail)=>{img.onload=ok;img.onerror=fail;img.src=url});shotImage=img;/* Old v1 settings may force a wrong 8-tube layout: always redetect from the new screenshot. */$('shotPreview').src=img.src;$('shotPreview').hidden=false;$('scanShot').disabled=false;$('scanReport').textContent='Изображение загружено ('+img.width+'×'+img.height+'). Распознавание запущено автоматически. Файл никуда не отправляется.';await scanCurrentShot();}catch(err){$('scanReport').textContent='Не удалось открыть изображение: '+err.message}};
 function startAutoSolution(){
@@ -618,8 +619,26 @@ async function scanCurrentShot(){
      throw new Error('Модуль распознавания не загрузился. Перезапусти приложение.');
    const scan=autoRecognizeGame(canvas);
    if(!scan.valid){
-     $('scanReport').textContent='Автоматическое распознавание не завершено: '+scan.reason;
-     msg('Не удалось распознать: '+(scan.reason||'проверь игровой скриншот')+'. Старый ход сброшен.');
+     // Preserve high-confidence readings, but never guess colors for unrecognized symbols.
+     const partial=Array.isArray(scan.state)&&scan.state.length===scan.count
+       &&scan.count>=8&&scan.count<=12&&scan.filled>=6
+       &&scan.visible>=5&&scan.bad<=4;
+     if(partial){
+       state=scan.state.map(t=>t.map(v=>v==='X'?'?':v));
+       history=[];pending=null;plannedMoves=[];playMode=false;selectedTube=null;editingTarget=null;
+       $('palette').classList.remove('editing');
+       $('count').value=scan.count;$('capacity').value=4;
+       render();save();
+       $('confirmScan').hidden=false;
+       $('quickHint').disabled=true;
+       $('scanReport').textContent='Частично распознано: '+scan.count+
+         ' колбочек. Неуверенные слои отмечены знаком ?. Проверь их и нажми «Проверила поле → ход».';
+       msg('Поле распознано не полностью. Проверь знаки ? и цвета, затем подтверди поле. Ход автоматически не предлагается.');
+     }else{
+       $('scanReport').textContent='Не удалось распознать скриншот: '+(scan.reason||'неподходящее расположение колбочек')+
+         '. Попробуй скриншот с целым игровым полем.';
+       msg('Не удалось прочитать новое поле. Предыдущую подсказку не показываю.');
+     }
      return;
    }
    history=[];
@@ -628,6 +647,7 @@ async function scanCurrentShot(){
    $('palette').classList.remove('editing');
    $('count').value=scan.count;$('capacity').value=4;
    render();save();$('quickHint').disabled=false;
+   $('confirmScan').hidden=true;
    $('scanReport').textContent=scan.count+' колбочек, '+scan.visible+
      ' видимых фишек, '+scan.hidden+' скрытых слоёв. Проверено автоматически.';
    startAutoSolution();
@@ -654,7 +674,7 @@ document.addEventListener('pointerdown',event=>{
 document.addEventListener('keydown',event=>{
  if(event.key==='Escape'&&$('palette').classList.contains('editing'))closePalette();
 });
-$('quickUndo').onclick=()=>{$('undo').click();showUndo()};$('quickHint').onclick=()=>{try{
+$('confirmScan').onclick=()=>{if(!state.length)return;if(unknownTop(state)){msg('Сначала укажи цвет в колбочках с открытым знаком ?.');return}$('confirmScan').hidden=true;$('quickHint').disabled=false;hint()};$('quickUndo').onclick=()=>{$('undo').click();showUndo()};$('quickHint').onclick=()=>{try{
  if($('palette').classList.contains('editing')){closePalette();return}
  if(editingTarget&&unknownTop(state)){$('palette').classList.add('editing');return}
  if(pending){$('apply').click()}else hint()
