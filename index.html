@@ -205,12 +205,12 @@ function layerBackground(canvas,x,y){
 }
 function readEightTubeBoard(canvas){
  const palette=Object.entries(levelTwoRGB),spots=[];
- const tubes=[...centersX.map((x,i)=>({x,ys:centerY.slice(0,4),index:i})),{x:centersX[2],ys:centerY.slice(4),index:6},{x:centersX[3],ys:centerY.slice(4),index:7}];
+ const gameX=[48,99,149,199,249,299];const tubes=[...gameX.map((x,i)=>({x,ys:centerY.slice(0,4),index:i})),{x:gameX[2],ys:centerY.slice(4),index:6},{x:gameX[3],ys:centerY.slice(4),index:7}];
  for(const tube of tubes){
   for(let row=0;row<4;row++){
    const rgb=layerBackground(canvas,tube.x,tube.ys[row]);
-   const intensity=rgb[0]+rgb[1]+rgb[2];
-   if(intensity<195){spots.push({index:tube.index,row,label:'_',rgb,scores:[]});continue}
+   const middle=canvas.getContext('2d',{willReadFrequently:true}).getImageData(Math.round(tube.x)-2,Math.round(tube.ys[row])-3,4,7).data;let centerValue=0;for(let q=0;q<middle.length;q+=4)centerValue+=middle[q]+middle[q+1]+middle[q+2];const intensity=centerValue/(middle.length/4);
+   if(intensity<185){spots.push({index:tube.index,row,label:'_',rgb,scores:[]});continue}
    const scores=palette.map(([name,base])=>({name,dist:base.reduce((sum,val,k)=>sum+(rgb[k]-val)**2,0)})).sort((a,b)=>a.dist-b.dist);
    spots.push({index:tube.index,row,rgb,scores,label:scores[0].name});
   }
