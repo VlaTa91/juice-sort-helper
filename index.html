@@ -332,7 +332,7 @@ function hint(){
  const counts={};for(const t of state)for(const v of t)if(v!=='?')counts[v]=(counts[v]||0)+1;const excessive=Object.entries(counts).filter(([v,n])=>n>cap());if(excessive.length){msg('Проверь цвета: '+excessive.map(([v,n])=>names[Number(v)]+' — '+n).join(', ')+'. Исправь ошибочно распознанные слои.');render();return;}
  if(unknownCount(state)){
    if(unknownTop(state)){render();const ix=state.findIndex(t=>t.at(-1)==='?');if(ix>=0){editingTarget=[ix,state[ix].length-1];$('palette').classList.add('editing');$('quickHint').textContent='Выбери цвет';msg('Колбочка №'+(ix+1)+': какой цвет открылся? Нажми символ в палитре.')}return}
-   const analysis=JuicePlanner.choose(state,{capacity:cap(),simulations:340,depth:24});
+   const analysis=JuicePlanner.choose(state,{capacity:cap(),simulations:340,depth:28,visited:history});
    if(!analysis.move){
      render();save();
      msg(analysis.reason==='invalid-counts'
