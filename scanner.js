@@ -53,6 +53,8 @@ function autoRecognizeGame(canvas){
   '10':[[179,107,103],[142,75,70],[156,55,59],[149,85,76]]
  };
  function classify([r,g,b]){
+  // Saturated pink must not be mistaken for a gray dash (tube 7 regression).
+  if(r>=170&&r-g>30&&b-g>24&&b>r-65)return '6';
   if(g>=r+3&&Math.abs(g-b)<19&&r+g+b<345)return '_';
   if(r>50&&r<145&&r-g>11&&g-b>1&&g-b<29&&g<113&&b<94)return '?';
   if(Math.abs(r-g)<13&&Math.abs(g-b)<15&&r>111&&r<190)return '9';
