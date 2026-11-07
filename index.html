@@ -399,7 +399,7 @@ function screenNineBoard(canvas){
  };
  const types=Object.entries(prototypes);
  function tileAt(x,y){
-  const rgb=screenSample(pixels,w,h,x-23,y-220);
+  const rgb=screenSample(pixels,w,h,x-22,y-220);
   const lum=(rgb[0]+rgb[1]+rgb[2])/3;
   const chrom=Math.max(...rgb)-Math.min(...rgb);
   if(lum<86&&chrom<27)return '_';
