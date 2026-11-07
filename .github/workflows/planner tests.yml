@@ -5,7 +5,9 @@ on:
       - "planner.js"
       - "scanner.js"
       - "journal.js"
+      - "memory.js"
       - "tests/planner tests.js"
+      - "tests/memory tests.js"
       - ".github/workflows/planner tests.yml"
   workflow_dispatch:
 jobs:
@@ -17,3 +19,4 @@ jobs:
         with:
           node-version: "22"
       - run: node "tests/planner tests.js"
+      - run: node "tests/memory tests.js"
