@@ -1,4 +1,4 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#142b24"><link rel="manifest" href="manifest.webmanifest"><title>Соковое испытание · ручная версия 36</title><style>body{margin:0;background:#10231e;color:#f3f5ee;font:16px system-ui} main{zoom:.6}main{max-width:760px;margin:auto;padding:16px}h1{font-size:25px}button,select,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #65786b;background:#284338;color:white}button{cursor:pointer}button:disabled{opacity:.4}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 5px}.tube{border:2px solid #819b91;border-radius:7px 7px 18px 18px;height:155px;display:flex;flex-direction:column-reverse;overflow:hidden;background:#1d302a;position:relative}.tube.active{outline:3px solid #f9d76b}.layer{flex:1;border-bottom:1px solid #0004;display:grid;place-items:center;color:#fff;text-shadow:0 1px 3px #000;font-weight:700}.tube-label{text-align:center;margin-bottom:5px;font-size:13px}.item{min-width:0}.palette{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.swatch{width:43px;height:43px;padding:0;border:3px solid transparent;font-size:25px;font-weight:800;color:#fff;text-shadow:0 1px 3px #222,0 0 3px #222}.swatch.sel{border-color:white}#message{padding:12px;background:#25453a;border-radius:10px;min-height:40px}small{color:#b5c6bd} @media(max-width:420px){.tube{height:132px}.board{gap:9px 3px}}#stepPanel{margin:12px 0;padding:13px 15px;background:#284338;border:2px solid #8fbca3;border-radius:13px}#stepPanel strong{display:block;font-size:31px;line-height:1.15;color:#fff;margin-bottom:9px}#stepInfo{font-size:18px;line-height:1.4}#stepPanel[hidden]{display:none}.tube-label-from,.tube-label-to{font-weight:900!important;font-size:15px!important;border-radius:5px;color:#10231e!important}.tube-label-from{background:#ffcf58}.tube-label-to{background:#83d4ff}.board{row-gap:26px}.item{transition:transform .2s ease}.item.pour-source{transform:translateY(-16px);filter:drop-shadow(0 5px 4px #0009)}.item.pour-source .tube{outline:3px solid #ffcf58;outline-offset:2px}.tube.from,.tube.to{outline:none}#manualBar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:9px 0}#manualBar button{padding:7px}#stepPanel[hidden]{display:none}#stepPanel{display:none!important}/* Compact gameplay: the board is primary; recurring actions float at the thumb position. */
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#142b24"><link rel="manifest" href="manifest.webmanifest"><title>Соковое испытание · ручная версия 37</title><style>body{margin:0;background:#10231e;color:#f3f5ee;font:16px system-ui} main{zoom:.6}main{max-width:760px;margin:auto;padding:16px}h1{font-size:25px}button,select,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #65786b;background:#284338;color:white}button{cursor:pointer}button:disabled{opacity:.4}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 5px}.tube{border:2px solid #819b91;border-radius:7px 7px 18px 18px;height:155px;display:flex;flex-direction:column-reverse;overflow:hidden;background:#1d302a;position:relative}.tube.active{outline:3px solid #f9d76b}.layer{flex:1;border-bottom:1px solid #0004;display:grid;place-items:center;color:#fff;text-shadow:0 1px 3px #000;font-weight:700}.tube-label{text-align:center;margin-bottom:5px;font-size:13px}.item{min-width:0}.palette{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.swatch{width:43px;height:43px;padding:0;border:3px solid transparent;font-size:25px;font-weight:800;color:#fff;text-shadow:0 1px 3px #222,0 0 3px #222}.swatch.sel{border-color:white}#message{padding:12px;background:#25453a;border-radius:10px;min-height:40px}small{color:#b5c6bd} @media(max-width:420px){.tube{height:132px}.board{gap:9px 3px}}#stepPanel{margin:12px 0;padding:13px 15px;background:#284338;border:2px solid #8fbca3;border-radius:13px}#stepPanel strong{display:block;font-size:31px;line-height:1.15;color:#fff;margin-bottom:9px}#stepInfo{font-size:18px;line-height:1.4}#stepPanel[hidden]{display:none}.tube-label-from,.tube-label-to{font-weight:900!important;font-size:15px!important;border-radius:5px;color:#10231e!important}.tube-label-from{background:#ffcf58}.tube-label-to{background:#83d4ff}.board{row-gap:26px}.item{transition:transform .2s ease}.item.pour-source{transform:translateY(-16px);filter:drop-shadow(0 5px 4px #0009)}.item.pour-source .tube{outline:3px solid #ffcf58;outline-offset:2px}.tube.from,.tube.to{outline:none}#manualBar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:9px 0}#manualBar button{padding:7px}#stepPanel[hidden]{display:none}#stepPanel{display:none!important}/* Compact gameplay: the board is primary; recurring actions float at the thumb position. */
 main{padding-bottom:130px}
 h1{margin:3px 0 9px;font-size:24px}
 #quickActions{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:999;display:flex;align-items:center;gap:9px;background:#132820ed;border:1px solid #5b796b;border-radius:22px;padding:9px;box-shadow:0 5px 24px #0009}
@@ -133,7 +133,7 @@ body>#board .item.pour-target .tube{
 }
 body>#board .item.pour-source .layer,
 body>#board .item.pour-target .layer{filter:none}
-</style></head><body><main><h1>Соковое испытание <small>Ручная v36</small></h1><div class="controls"><label>Колбочек <input id="count" type="number" min="3" max="20" value="12" style="width:65px"></label><label>Вместимость <input id="capacity" type="number" min="2" max="8" value="4" style="width:55px"></label><button id="reset">Новый уровень</button></div><div class="controls"><button id="mode">Режим: ввод цветов</button><button id="capture">Наблюдать за экраном (ПК)</button><button id="stopCapture" hidden>Остановить наблюдение</button></div><video id="screen" autoplay muted playsinline hidden style="width:100%;max-height:250px;object-fit:contain"></video><section class="uploadArea"><strong>Распознавание по скриншоту</strong><div class="controls"><label style="background:#284338;padding:10px;border-radius:9px;cursor:pointer">📷 Загрузить скриншот<input type="file" id="uploadShot" accept="image/*" style="display:none"></label><button id="scanShot" hidden disabled>Распознать 12 колбочек</button></div><img id="shotPreview" alt="Загруженный скриншот" hidden style="max-height:240px;max-width:100%;border-radius:8px"><div id="scanReport" style="font-size:13px;color:#c4d9ce;margin-top:6px">Распознавание рассчитано на полноэкранные скриншоты Ant Legion с расположением 6 + 6 колбочек. Проверь результат перед подсказкой.</div></section><div id="quickActions"><button id="quickUndo" title="Отменить последний ход" aria-label="Отменить последний ход" hidden>↶</button><button id="quickHint" title="Показать следующий ход">Показать ход</button></div><div class="palette" id="palette"></div><div id="manualBar"><button id="manualMode" hidden>✏️ Исправить слой</button><small id="editStatus" hidden></small></div><div id="stepPlaceholder"></div><div class="board" id="board"></div><div id="fieldCheck" role="status" style="padding:9px;margin:8px 0;background:#263e34;border-radius:9px;font-size:13px"></div><div id="stepPanel" hidden><strong id="stepTitle">Следующий ход</strong><div id="stepInfo"></div><div class="controls"><button id="stepDone" hidden>✓ Сделала ход</button><button id="stepSkip" hidden>↻ Пересчитать</button></div></div><div class="controls"><button id="hint" hidden>Подсказать ход</button><button id="undo">Отменить</button><button id="apply" hidden>Выполнить подсказку</button></div><div id="message" role="status">Введи верхние цвета, оставив нижние как ?. Нажми «Подсказать ход».</div></main><div id="statusToast" role="status" aria-live="polite" hidden></div>
+</style></head><body><main><h1>Соковое испытание <small>Ручная v37</small></h1><div class="controls"><label>Колбочек <input id="count" type="number" min="3" max="20" value="12" style="width:65px"></label><label>Вместимость <input id="capacity" type="number" min="2" max="8" value="4" style="width:55px"></label><button id="reset">Новый уровень</button></div><div class="controls"><button id="mode">Режим: ввод цветов</button><button id="capture">Наблюдать за экраном (ПК)</button><button id="stopCapture" hidden>Остановить наблюдение</button></div><video id="screen" autoplay muted playsinline hidden style="width:100%;max-height:250px;object-fit:contain"></video><section class="uploadArea"><strong>Распознавание по скриншоту</strong><div class="controls"><label style="background:#284338;padding:10px;border-radius:9px;cursor:pointer">📷 Загрузить скриншот<input type="file" id="uploadShot" accept="image/*" style="display:none"></label><button id="scanShot" hidden disabled>Распознать 12 колбочек</button></div><img id="shotPreview" alt="Загруженный скриншот" hidden style="max-height:240px;max-width:100%;border-radius:8px"><div id="scanReport" style="font-size:13px;color:#c4d9ce;margin-top:6px">Распознавание рассчитано на полноэкранные скриншоты Ant Legion с расположением 6 + 6 колбочек. Проверь результат перед подсказкой.</div></section><div id="quickActions"><button id="quickUndo" title="Отменить последний ход" aria-label="Отменить последний ход" hidden>↶</button><button id="quickHint" title="Показать следующий ход">Показать ход</button></div><div class="palette" id="palette"></div><div id="manualBar"><button id="manualMode" hidden>✏️ Исправить слой</button><small id="editStatus" hidden></small></div><div id="stepPlaceholder"></div><div class="board" id="board"></div><div id="fieldCheck" role="status" style="padding:9px;margin:8px 0;background:#263e34;border-radius:9px;font-size:13px"></div><div id="stepPanel" hidden><strong id="stepTitle">Следующий ход</strong><div id="stepInfo"></div><div class="controls"><button id="stepDone" hidden>✓ Сделала ход</button><button id="stepSkip" hidden>↻ Пересчитать</button></div></div><div class="controls"><button id="hint" hidden>Подсказать ход</button><button id="undo">Отменить</button><button id="apply" hidden>Выполнить подсказку</button></div><div id="message" role="status">Введи верхние цвета, оставив нижние как ?. Нажми «Подсказать ход».</div></main><div id="statusToast" role="status" aria-live="polite" hidden></div>
 <div id="calibrationPanel" hidden role="dialog" aria-modal="true" aria-labelledby="calibrationTitle">
  <div id="calibrationCard">
   <h2 id="calibrationTitle">Настройка распознавания</h2>
@@ -383,76 +383,61 @@ function screenTileType(rgb){
  return distance<47?best:'?';
 }
 function screenNineBoard(canvas){
- const {width:w,height:h}=canvas;
- const image=canvas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,w,h).data;
- const first=50*w/351,last=302*w/351,spacing=(last-first)/5;
- const topCenters=Array.from({length:6},(_,i)=>first+i*spacing);
- const yl=Math.round(h*.525),yr=Math.round(h*.665);
- // Horizontal pixel-gradient projections on the lower row expose even empty glass tubes.
- const edges=new Float32Array(w-1);
- for(let x=0;x<w-1;x++){
-  let sum=0;
-  for(let y=yl;y<yr;y++){
-   const a=(y*w+x)*4,b=a+4;
-   const g1=.299*image[a]+.587*image[a+1]+.114*image[a+2];
-   const g2=.299*image[b]+.587*image[b+1]+.114*image[b+2];
-   sum+=Math.abs(g1-g2);
-  }
-  edges[x]=sum/Math.max(1,yr-yl);
- }
- const sideStrength=x=>{
-  const c=Math.round(x),from=Math.max(0,c-4),end=Math.min(w-2,c+4);
-  let best=0;
-  for(let j=from;j<=end;j++)best=Math.max(best,edges[j]);
-  return best;
+ // Work only with a cropped game-board rectangle. Interface, leaves and buttons
+ // outside this region cannot influence recognition.
+ const cropped=document.createElement('canvas');
+ cropped.width=306;cropped.height=310;
+ cropped.getContext('2d',{willReadFrequently:true}).drawImage(canvas,23,220,306,310,0,0,306,310);
+ const w=cropped.width,h=cropped.height;
+ const pixels=cropped.getContext('2d',{willReadFrequently:true}).getImageData(0,0,w,h).data;
+ // Measurements from the actual 9-tube layout, in normalized 351x768 pixels.
+ const xs=[50,100,150,200,250,300,123,174,224];
+ const top=[251,278,309,337],bottom=[414,443,473,499];
+ const prototypes={
+  '9':[148,150,148], '10':[151,54,53], '2':[193,99,45],
+  '8':[193,164,117], '0':[136,113,64], '1':[90,133,162], '5':[41,108,43]
  };
- const candidates=[];
- for(let bottomCount=2;bottomCount<=6;bottomCount++){
-  const locations=Array.from({length:bottomCount},(_,i)=>(first+last)/2+(i-(bottomCount-1)/2)*spacing);
-  const pairStrengths=locations.map(x=>Math.min(sideStrength(x-16*w/351),sideStrength(x+16*w/351)));
-  const min=Math.min(...pairStrengths),mean=pairStrengths.reduce((a,b)=>a+b,0)/bottomCount;
-  candidates.push({bottomCount,locations,score:mean,min});
- }
- candidates.sort((a,b)=>b.score-a.score);
- const layout=candidates[0];
- if(layout.bottomCount!==3||layout.min<19||layout.score<25)return null;
- // Find the long bright strip formed by the six filled top tubes, not fixed Y coordinates.
- let start=null,runs=[];
- for(let y=Math.round(h*.22);y<Math.round(h*.54);y++){
-  let bright=0;
-  for(const cx of topCenters){
-   const rgb=screenSample(image,w,h,cx,y);
-   if((rgb[0]+rgb[1]+rgb[2])/3>68)bright++;
+ const types=Object.entries(prototypes);
+ function tileAt(x,y){
+  const rgb=screenSample(pixels,w,h,x-23,y-220);
+  const lum=(rgb[0]+rgb[1]+rgb[2])/3;
+  const chrom=Math.max(...rgb)-Math.min(...rgb);
+  if(lum<86&&chrom<27)return '_';
+  let label='?',best=Infinity;
+  for(const [type,ref] of types){
+   const dist=Math.hypot(...rgb.map((v,i)=>v-ref[i]));
+   if(dist<best){best=dist;label=type}
   }
-  const active=bright>=4;
-  if(active&&start===null)start=y;
-  if(!active&&start!==null){runs.push([start,y-1]);start=null}
+  return best<=46?label:'?';
  }
- if(start!==null)runs.push([start,Math.round(h*.54)-1]);
- runs.sort((a,b)=>(b[1]-b[0])-(a[1]-a[0]));
- const run=runs[0];
- if(!run||run[1]-run[0]<h*.09)return {valid:false,reason:'Не найдены границы верхнего ряда.'};
- const slotY=Array.from({length:4},(_,j)=>run[0]+9*h/768+(j+.5)*(run[1]-run[0]-7*h/768)/4);
- const lowerOffset=.215*h;
- const columns=[...topCenters,...layout.locations],board=[];
- const counts=Object.fromEntries(Object.keys(nineTilePrototypes).map(k=>[k,0]));
- let unknown=0;
- for(let i=0;i<columns.length;i++){
-  const topDown=slotY.map(y=>screenTileType(screenSample(image,w,h,columns[i],y+(i>=6?lowerOffset:0))));
-  if(topDown.includes('?'))unknown++;
-  // Empty cells must remain at the top; never silently discard a missing middle cell.
-  let seenTile=false,gap=false;
-  for(const tile of topDown){if(tile!=='_')seenTile=true;else if(seenTile)gap=true}
-  const normalized=topDown.filter(t=>t!=='_');
-  if(gap)unknown++;
-  for(const tile of normalized){if(Object.prototype.hasOwnProperty.call(counts,tile))counts[tile]++;else unknown++}
-  board.push(normalized.reverse());
+ // Small translations compensate for differences in system bars and screenshot crop.
+ let closest=null;
+ for(const dy of [0,-2,2,-4,4,-7,7,-10,10]){
+  for(const dx of [0,-2,2,-4,4]){
+   const board=[],counts=Object.fromEntries(types.map(([key])=>[key,0]));
+   let unexpected=0,filled=0;
+   for(let i=0;i<9;i++){
+    const slots=(i<6?top:bottom).map(y=>tileAt(xs[i]+dx,y+dy));
+    let seenTile=false;
+    for(const label of slots){
+      if(label!=='_')seenTile=true;
+      else if(seenTile)unexpected++;
+      if(label==='?')unexpected++;
+    }
+    const tube=slots.filter(label=>label!=='_').reverse();
+    for(const label of tube){if(counts[label]===undefined)unexpected++;else counts[label]++}
+    filled+=tube.length;
+    board.push(tube);
+   }
+   const deviation=Object.values(counts).reduce((sum,n)=>sum+Math.abs(n-4),0);
+   const cost=unexpected*100+deviation*8+Math.abs(28-filled)*10+Math.abs(dx)+Math.abs(dy);
+   if(!closest||cost<closest.cost)closest={cost,board,counts,recognized:filled,unknown:unexpected};
+   if(unexpected===0&&filled===28&&deviation===0)return {valid:true,board,counts,recognized:28,unknown:0};
+  }
  }
- const valid=unknown===0&&Object.values(counts).every(n=>n===4)
-  &&board.flat().length===28&&board.length===9;
- return {valid,board,counts,recognized:board.flat().length,unknown,geometry:{layout,run,slotY}};
+ // Never fabricate tiles or a move from a low-confidence image.
+ return closest?.recognized>=20?{valid:false,...closest}:null;
 }
-
 function readEightTubeBoard(canvas){
  const palette=Object.entries(levelTwoRGB),spots=[];
  const gameX=[48,99,149,199,249,299];const tubes=[...gameX.map((x,i)=>({x,ys:centerY.slice(0,4),index:i})),{x:gameX[2],ys:centerY.slice(4),index:6},{x:gameX[3],ys:centerY.slice(4),index:7}];
