@@ -23,16 +23,18 @@ function start(board,meta={}){
 if(active&&active.status==="in-progress"){active.status="replaced";active.finishedAt=new Date().toISOString();persist()}
 active={id:id(),startedAt:new Date().toISOString(),status:"in-progress",
 initial:clone(board),latest:clone(board),meta:clone(meta),events:[]};persist();return active.id}
-function resume(board){if(!active||active.status!=="in-progress"){start(board,{source:"recovered"});return}
+function resume(board){if(active&&active.status!=="in-progress"&&JSON.stringify(active.latest)===JSON.stringify(board))return;
+if(!active||active.status!=="in-progress"){start(board,{source:"recovered"});return}
 if(JSON.stringify(active.latest)!==JSON.stringify(board)){
 active.events.push({at:new Date().toISOString(),kind:"recovery",board:clone(board)});
 active.latest=clone(board);persist()
 }}
-function record(kind,data,board){if(!active||active.status!=="in-progress")start(board||[],{source:"manual"});
+function record(kind,data,board){if(active?.status==="blocked"){active.status="in-progress";delete active.finishedAt}
+if(!active||active.status!=="in-progress")start(board||[],{source:"manual"});
 const event={at:new Date().toISOString(),kind,data:clone(data||{})};
 if(board!==undefined){event.board=clone(board);active.latest=clone(board)}
 active.events.push(event);persist()}
-function finish(status,board){if(!active||active.status!=="in-progress")return;
+function finish(status,board){if(!active||!(["in-progress","blocked"].includes(active.status)))return;
 active.status=status;active.finishedAt=new Date().toISOString();active.latest=clone(board);persist()}
 async function all(){const database=await db();if(!database)return active?[clone(active)]:[];
 return new Promise(resolve=>{try{const tx=database.transaction(STORE,"readonly"),
