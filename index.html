@@ -934,6 +934,7 @@ $('tubeAdd').onclick=()=>{
  state.splice(index,0,contents);$('count').value=state.length;
  pending=null;plannedMoves=[];selectedTube=null;editingTarget=null;playMode=false;
  closePalette();$('confirmScan').hidden=true;$('quickHint').disabled=false;
+ if($('moveReason'))$('moveReason').hidden=true;
  JuiceJournal.record('insert-tube',{at:index+1,fill:$('tubePreset').value},state);
  render();save();$('tubeInsertAt').dataset.touched='';refreshTubeEditor();
  tubeEditStatus('Добавлена колбочка №'+(index+1)+'. Нажми её слой, чтобы выбрать цвет.');
@@ -951,6 +952,7 @@ $('tubeRemove').onclick=()=>{
  state.splice(index,1);$('count').value=state.length;
  pending=null;plannedMoves=[];selectedTube=null;editingTarget=null;
  closePalette();$('confirmScan').hidden=true;$('quickHint').disabled=false;
+ if($('moveReason'))$('moveReason').hidden=true;
  JuiceJournal.record('remove-tube',{at:index+1},state);
  render();save();$('tubeInsertAt').dataset.touched='';refreshTubeEditor();
  tubeEditStatus('Колбочка удалена. Проверь номера и цвета.');
