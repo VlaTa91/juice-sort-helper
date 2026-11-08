@@ -31,11 +31,15 @@ function attach(s){
   return !real(expected)||v===expected;
  }))
 }
-function snapshot(){return clone(level)}
-function restore(saved){
- const previous=level;level=clone(saved);
- if(!level||!Array.isArray(level.original)||!Array.isArray(level.positions)||!level.learned){level=previous;return false}
- save();return true
+function snapshot(){return level?clone(level):null}
+function restore(saved,{retainDiscoveries=false}={}){
+ if(!saved||!Array.isArray(saved.original)||!Array.isArray(saved.positions)||!saved.learned)return false;
+ const next=clone(saved);
+ if(retainDiscoveries&&level&&JSON.stringify(next.original)===JSON.stringify(level.original)){
+  for(const [token,value] of Object.entries(level.learned||{}))
+   if(real(value))next.learned[token]=value;
+ }
+ level=next;save();return true;
 }
 function edit(i,j,value,removed=false){
  if(!level||!level.positions[i])return false;
