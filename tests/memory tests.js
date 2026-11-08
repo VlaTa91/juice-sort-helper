@@ -54,4 +54,18 @@ assert.equal(M2.restart()[0][2],"?");
 const mult=[["?","2","2","2"],["1","1"],[],[]];
 M2.begin(mult,true);M2.move([0,2,2]);M2.edit(0,1,"3");
 assert.equal(M2.restart()[0][1],"3");
+// A simulated move can be rewound without confusing token IDs.
+M2.begin([["?","?","2"],["?","2"],[]],true);
+const beforeMove=M2.snapshot();
+M2.move([0,1,1]);
+M2.edit(0,1,"3"); // learned from the moved source
+assert.equal(M2.knownCount(),1);
+assert.equal(M2.restore(beforeMove,{retainDiscoveries:true}),true);
+assert.equal(M2.info().moves,0);
+assert.equal(M2.restart()[0][1],"3","Genuine discoveries survive rewinding a move");
+M2.begin([["?","?","2"],["?","2"],[]],true);
+const beforeCorrection=M2.snapshot();
+M2.edit(0,1,"3");
+assert.equal(M2.restore(beforeCorrection),true);
+assert.equal(M2.knownCount(),0,"Undoing an edit must reverse a mistaken color");
 console.log("Level replay memory tests passed");
