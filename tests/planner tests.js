@@ -101,6 +101,35 @@ function testScannerDynamicRows(){
  assert.equal(result.state[11].length,0);
 }
 
+function testPreferShorterSource(){
+ // Both red crosses are on top. Pour 9 -> 8 instead of 8 -> 9:
+ // the former leaves only one unknown piece in tube 9.
+ const board=[
+  ["?","?","?","6"],["?","?","2"],["?","?","?","6"],
+  ["?","?","?","3"],["?","?","5"],["?","?","?","3"],
+  ["?","?","0","0"],["?","?","10"],["?","10"],
+  ["1","1"],["7","7","7"]
+ ];
+ const moves=P.legal(board,4);
+ assert(moves.some(m=>m.join()==="7,8,1"),"Expected 8 -> 9 to be legal");
+ assert(moves.some(m=>m.join()==="8,7,1"),"Expected 9 -> 8 to be legal");
+ const compact=P.preferCompactMoves(board,moves);
+ assert(!compact.some(m=>m.join()==="7,8,1"),"Dominated move 8 -> 9 still present");
+ assert(compact.some(m=>m.join()==="8,7,1"),"Useful move 9 -> 8 missing");
+ const chosen=P.choose(board,{capacity:4,simulations:80,depth:12,seed:1234});
+ assert(chosen.move,"No move selected on a valid 9-color board");
+ assert.notEqual(chosen.move.join(),"7,8,1","Planner selected inferior reverse direction");
+}
+function testStablePalette(){
+ const html=fs.readFileSync(path.join(root,"index.html"),"utf8");
+ assert(!html.includes("body:has(>#palette.editing)>#board"),
+  "Opening the palette must not reposition or resize the board");
+ assert(!html.includes("$('palette').scrollIntoView"),
+  "Opening the palette must not trigger auto-scrolling");
+ assert(html.includes("Reserve the palette area on every render"),
+  "Board should always reserve space for the palette");
+}
+
 async function testJournal(){
  const memory=new Map(),storage={
   getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v)};
@@ -116,7 +145,7 @@ async function testJournal(){
  assert.equal(runs[0].events.length,2);
 }
 async function main(){
- testBasics();testScannerColors();testScannerDynamicRows();await testJournal();
+ testBasics();testScannerColors();testScannerDynamicRows();testPreferShorterSource();testStablePalette();await testJournal();
  const matrix=[{colors:3,seeds:12},{colors:4,seeds:20},{colors:8,seeds:10},{colors:10,seeds:6,start:11}];
  const summary=[];
  for(const item of matrix){
