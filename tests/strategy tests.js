@@ -74,4 +74,17 @@ const distinct=P.preferLowerSource(differentLayers,P.legal(differentLayers,4));
 assert(distinct.some(m=>m.join()==="6,7,1"));
 assert(distinct.some(m=>m.join()==="7,6,1"),
  "Both directions remain when their newly exposed information differs");
+// With several already-opened buried layers, never choose solely by the
+// number of topmost stars: evaluate the accessible future chains instead.
+const knownUnderneath=[
+ ["?","?","1","2"],["?","?","2","3"],["?","?","3","1"],[],[]
+];
+const deep=P.choose(knownUnderneath,{capacity:4,simulations:60,depth:12,seed:57});
+assert.equal(deep.reason,"belief-mcts",
+ "Late-game positions with known buried layers require search, not top-frequency opening");
+const knownNext=[["?","?","5","1"],[],["?","?","2","2"]];
+const maskedNext=[["?","?","?","1"],[],["?","?","2","2"]];
+assert(P.strategicValue(knownNext,[0,1,1],4)>
+       P.strategicValue(maskedNext,[0,1,1],4),
+ "Exposing an already revealed buried color should aid planning");
 console.log("Systematic strategy regression tests passed");
