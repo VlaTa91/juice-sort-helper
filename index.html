@@ -316,7 +316,8 @@ body>#palette .palette-close{
  <label>Убрать колбу <select id="tubeRemoveAt" aria-label="Номер удаляемой колбочки"></select></label>
  <div class="tool-row"><button id="tubeRemove" type="button">− Удалить выбранную</button></div>
  <small>Цвета исправляются касанием любой ячейки на поле. Для новой заполненной колбы выбери «4 скрытых ?» и раскрась нужные слои.</small>
- <div class="tool-row"><button id="tubeReady" type="button">✓ Проверить и продолжить</button></div>
+ <label>Всего колбочек <input id="tubeTotal" type="number" min="3" max="20" value="12" style="width:68px;padding:5px"></label>
+ <div class="tool-row"><button id="tubeStart" type="button">С нуля</button><button id="tubeReady" type="button">✓ Проверить поле</button></div>
  <div id="tubeToolsStatus" role="status"></div>
 </section>
 <div id="statusToast" role="status" aria-live="polite" hidden></div><div id="scanError" role="alert" hidden><span id="scanErrorText"></span><button id="scanErrorClose" type="button" aria-label="Закрыть сообщение">×</button></div>
@@ -889,6 +890,7 @@ $('confirmScan').onclick=()=>{if(!state.length)return;if(unknownTop(state)){msg(
 
 function refreshTubeEditor(){
  const add=$('tubeInsertAt'),remove=$('tubeRemoveAt');
+ if(!$('tubeTotal').matches(':focus'))$('tubeTotal').value=String(state.length);
  const current=Number(add.value),oldRemove=Number(remove.value);
  add.innerHTML='';remove.innerHTML='';
  for(let k=0;k<=state.length;k++){
@@ -956,6 +958,17 @@ $('tubeRemove').onclick=()=>{
  JuiceJournal.record('remove-tube',{at:index+1},state);
  render();save();$('tubeInsertAt').dataset.touched='';refreshTubeEditor();
  tubeEditStatus('Колбочка удалена. Проверь номера и цвета.');
+};
+$('tubeStart').onclick=()=>{
+ const total=Number($('tubeTotal').value);
+ if(!Number.isInteger(total)||total<3||total>20){
+  tubeEditStatus('Укажи число колбочек от 3 до 20.');return
+ }
+ if(!confirm('Начать поле из '+total+' колбочек? Текущая попытка и её память будут заменены.'))return;
+ init(total,4);
+ $('confirmScan').hidden=true;$('quickHint').disabled=false;
+ $('tubeInsertAt').dataset.touched='';refreshTubeEditor();
+ tubeEditStatus('Новое поле создано. Нажимай ячейки и указывай цвета, затем проверь поле.');
 };
 $('tubeReady').onclick=()=>{
  const n=state.reduce((a,t)=>a+t.length,0),counts=new Map();
