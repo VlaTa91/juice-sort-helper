@@ -191,6 +191,7 @@ function testSevenColorLevelWithThreeBottomTubes(){
  const ctx={};vm.runInNewContext(source,ctx);
  const canvas={getContext:()=>({getImageData:()=>({data:pixels})})};
  const result=ctx.autoRecognizeGame(canvas);
+ console.log("Nine-tube geometry diagnostic:",JSON.stringify({count:result.count,filled:result.filled,visible:result.visible,hidden:result.hidden,shiftX:result.shiftX,shiftY:result.shiftY,state:result.state,reason:result.reason,valid:result.valid}));
  assert.equal(result.valid,true,"Fully known seven-color level should be valid: "+result.reason);
  assert.equal(result.count,9,"Do not silently drop the third lower tube");
  assert.equal(result.filled,7,"Seven filled tubes plus two empty");
