@@ -1,4 +1,4 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#142b24"><link rel="manifest" href="manifest.webmanifest"><title>Соковое испытание · версия 56</title><style>body{margin:0;background:#10231e;color:#f3f5ee;font:16px system-ui} main{zoom:.6}main{max-width:760px;margin:auto;padding:16px}h1{font-size:25px}button,select,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #65786b;background:#284338;color:white}button{cursor:pointer}button:disabled{opacity:.4}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 5px}.tube{border:2px solid #819b91;border-radius:7px 7px 18px 18px;height:155px;display:flex;flex-direction:column-reverse;overflow:hidden;background:#1d302a;position:relative}.tube.active{outline:3px solid #f9d76b}.layer{flex:1;border-bottom:1px solid #0004;display:grid;place-items:center;color:#fff;text-shadow:0 1px 3px #000;font-weight:700}.tube-label{text-align:center;margin-bottom:5px;font-size:13px}.item{min-width:0}.palette{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.swatch{width:43px;height:43px;padding:0;border:3px solid transparent;font-size:25px;font-weight:800;color:#fff;text-shadow:0 1px 3px #222,0 0 3px #222}.swatch.sel{border-color:white}#message{padding:12px;background:#25453a;border-radius:10px;min-height:40px}small{color:#b5c6bd} @media(max-width:420px){.tube{height:132px}.board{gap:9px 3px}}#stepPanel{margin:12px 0;padding:13px 15px;background:#284338;border:2px solid #8fbca3;border-radius:13px}#stepPanel strong{display:block;font-size:31px;line-height:1.15;color:#fff;margin-bottom:9px}#stepInfo{font-size:18px;line-height:1.4}#stepPanel[hidden]{display:none}.tube-label-from,.tube-label-to{font-weight:900!important;font-size:15px!important;border-radius:5px;color:#10231e!important}.tube-label-from{background:#ffcf58}.tube-label-to{background:#83d4ff}.board{row-gap:26px}.item{transition:transform .2s ease}.item.pour-source{transform:translateY(-16px);filter:drop-shadow(0 5px 4px #0009)}.item.pour-source .tube{outline:3px solid #ffcf58;outline-offset:2px}.tube.from,.tube.to{outline:none}#manualBar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:9px 0}#manualBar button{padding:7px}#stepPanel[hidden]{display:none}#stepPanel{display:none!important}/* Compact gameplay: the board is primary; recurring actions float at the thumb position. */
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#142b24"><link rel="manifest" href="manifest.webmanifest"><title>Соковое испытание · версия 57</title><style>body{margin:0;background:#10231e;color:#f3f5ee;font:16px system-ui} main{zoom:.6}main{max-width:760px;margin:auto;padding:16px}h1{font-size:25px}button,select,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #65786b;background:#284338;color:white}button{cursor:pointer}button:disabled{opacity:.4}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 5px}.tube{border:2px solid #819b91;border-radius:7px 7px 18px 18px;height:155px;display:flex;flex-direction:column-reverse;overflow:hidden;background:#1d302a;position:relative}.tube.active{outline:3px solid #f9d76b}.layer{flex:1;border-bottom:1px solid #0004;display:grid;place-items:center;color:#fff;text-shadow:0 1px 3px #000;font-weight:700}.tube-label{text-align:center;margin-bottom:5px;font-size:13px}.item{min-width:0}.palette{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.swatch{width:43px;height:43px;padding:0;border:3px solid transparent;font-size:25px;font-weight:800;color:#fff;text-shadow:0 1px 3px #222,0 0 3px #222}.swatch.sel{border-color:white}#message{padding:12px;background:#25453a;border-radius:10px;min-height:40px}small{color:#b5c6bd} @media(max-width:420px){.tube{height:132px}.board{gap:9px 3px}}#stepPanel{margin:12px 0;padding:13px 15px;background:#284338;border:2px solid #8fbca3;border-radius:13px}#stepPanel strong{display:block;font-size:31px;line-height:1.15;color:#fff;margin-bottom:9px}#stepInfo{font-size:18px;line-height:1.4}#stepPanel[hidden]{display:none}.tube-label-from,.tube-label-to{font-weight:900!important;font-size:15px!important;border-radius:5px;color:#10231e!important}.tube-label-from{background:#ffcf58}.tube-label-to{background:#83d4ff}.board{row-gap:26px}.item{transition:transform .2s ease}.item.pour-source{transform:translateY(-16px);filter:drop-shadow(0 5px 4px #0009)}.item.pour-source .tube{outline:3px solid #ffcf58;outline-offset:2px}.tube.from,.tube.to{outline:none}#manualBar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:9px 0}#manualBar button{padding:7px}#stepPanel[hidden]{display:none}#stepPanel{display:none!important}/* Compact gameplay: the board is primary; recurring actions float at the thumb position. */
 main{padding-bottom:130px}
 h1{margin:3px 0 9px;font-size:24px}
 #quickActions{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:999;display:flex;align-items:center;gap:9px;background:#132820ed;border:1px solid #5b796b;border-radius:22px;padding:9px;box-shadow:0 5px 24px #0009}
@@ -282,7 +282,44 @@ body>#palette .palette-close{
  display:grid!important;place-items:center!important;padding:0!important;
  border-radius:10px!important;background:#3a574a!important
 }
-</style></head><body><main><h1>Соковое испытание <small>v56</small></h1><div class="controls"><label>Колбочек <input id="count" type="number" min="3" max="20" value="12" style="width:65px"></label><label>Вместимость <input id="capacity" type="number" min="2" max="8" value="4" style="width:55px"></label><button id="reset">Новый уровень</button></div><div class="controls"><button id="mode">Режим: ввод цветов</button><button id="capture">Наблюдать за экраном (ПК)</button><button id="stopCapture" hidden>Остановить наблюдение</button></div><video id="screen" autoplay muted playsinline hidden style="width:100%;max-height:250px;object-fit:contain"></video><section class="uploadArea"><strong>Распознавание по скриншоту</strong><div class="controls"><label style="background:#284338;padding:10px;border-radius:9px;cursor:pointer">📷 Загрузить скриншот<input type="file" id="uploadShot" aria-label="Выбрать файл изображения из памяти телефона" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></label><button id="scanShot" hidden disabled>Распознать 12 колбочек</button></div><img id="shotPreview" alt="Загруженный скриншот" hidden style="max-height:240px;max-width:100%;border-radius:8px"><div id="scanReport" style="font-size:13px;color:#c4d9ce;margin-top:6px">Распознавание рассчитано на полноэкранные скриншоты Ant Legion с расположением 6 + 6 колбочек. Проверь результат перед подсказкой.</div></section><div id="quickActions"><button id="quickUndo" title="Назад на один ход в помощнике (в самой игре ход не отменяется)" aria-label="Назад на один ход" disabled>↶</button><button id="quickRestart" title="Перезапустить уровень, сохранив открытые цвета" aria-label="Перезапустить уровень с сохранёнными цветами" hidden>↻<span style="font-size:10px;line-height:1">Повтор</span></button><button id="quickHint" title="Показать следующий ход">Показать ход</button><button id="confirmScan" hidden title="Подтвердить частично распознанное поле">Проверила поле → ход</button></div><div class="palette" id="palette"></div><div id="manualBar"><button id="manualMode" hidden>✏️ Исправить слой</button><small id="editStatus" hidden></small></div><div id="stepPlaceholder"></div><div class="board" id="board"></div><div id="fieldCheck" role="status" style="padding:9px;margin:8px 0;background:#263e34;border-radius:9px;font-size:13px"></div><div id="stepPanel" hidden><strong id="stepTitle">Следующий ход</strong><div id="stepInfo"></div><div class="controls"><button id="stepDone" hidden>✓ Сделала ход</button><button id="stepSkip" hidden>↻ Пересчитать</button></div></div><div class="controls"><button id="hint" hidden>Подсказать ход</button><button id="undo">Отменить</button><button id="apply" hidden>Выполнить подсказку</button></div><div id="message" role="status">Введи верхние цвета, оставив нижние как ?. Нажми «Подсказать ход».</div></main><div id="statusToast" role="status" aria-live="polite" hidden></div><div id="scanError" role="alert" hidden><span id="scanErrorText"></span><button id="scanErrorClose" type="button" aria-label="Закрыть сообщение">×</button></div>
+
+/* v57: persistent, compact manual tube editor. Board never moves. */
+#tubeToolsToggle{position:fixed;top:38px;left:9px;z-index:1150;
+ border:1px solid #8da995;border-radius:9px;background:#284b3b;color:#fff;
+ padding:7px 10px;font:600 12px system-ui;box-shadow:0 2px 8px #0006}
+#tubeTools[hidden]{display:none!important}
+#tubeTools{position:fixed;z-index:1149;top:76px;left:9px;
+ width:min(340px,calc(100vw - 18px));box-sizing:border-box;
+ padding:12px;display:grid;gap:9px;background:#1b352a;
+ border:1px solid #91b09d;border-radius:12px;box-shadow:0 6px 22px #000b;
+ color:#f3f6ef;font:13px/1.35 system-ui}
+#tubeTools .tool-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#tubeTools .tool-head button{padding:4px 9px;font-size:23px;line-height:1.2;min-height:33px}
+#tubeTools label{display:flex;justify-content:space-between;align-items:center;gap:8px}
+#tubeTools select{min-width:140px;max-width:66%;padding:6px 5px;font-size:13px}
+#tubeTools .tool-row{display:flex;gap:8px;align-items:stretch}
+#tubeTools .tool-row button{flex:1;padding:8px 5px;font-size:13px}
+#tubeTools #tubeAdd{background:#426b49}
+#tubeTools #tubeReady{background:#557e46}
+#tubeTools #tubeRemove{background:#65443b}
+#tubeTools #tubeToolsStatus{font-size:12px;color:#d4e5db}
+@media(max-height:690px){
+ #tubeTools{top:69px;max-height:calc(100dvh - 160px);overflow-y:auto;gap:5px;padding:8px}
+ #tubeTools label{font-size:12px}
+}
+</style></head><body><main><h1>Соковое испытание <small>v57</small></h1><div class="controls"><label>Колбочек <input id="count" type="number" min="3" max="20" value="12" style="width:65px"></label><label>Вместимость <input id="capacity" type="number" min="2" max="8" value="4" style="width:55px"></label><button id="reset">Новый уровень</button></div><div class="controls"><button id="mode">Режим: ввод цветов</button><button id="capture">Наблюдать за экраном (ПК)</button><button id="stopCapture" hidden>Остановить наблюдение</button></div><video id="screen" autoplay muted playsinline hidden style="width:100%;max-height:250px;object-fit:contain"></video><section class="uploadArea"><strong>Распознавание по скриншоту</strong><div class="controls"><label style="background:#284338;padding:10px;border-radius:9px;cursor:pointer">📷 Загрузить скриншот<input type="file" id="uploadShot" aria-label="Выбрать файл изображения из памяти телефона" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></label><button id="scanShot" hidden disabled>Распознать 12 колбочек</button></div><img id="shotPreview" alt="Загруженный скриншот" hidden style="max-height:240px;max-width:100%;border-radius:8px"><div id="scanReport" style="font-size:13px;color:#c4d9ce;margin-top:6px">Распознавание рассчитано на полноэкранные скриншоты Ant Legion с расположением 6 + 6 колбочек. Проверь результат перед подсказкой.</div></section><div id="quickActions"><button id="quickUndo" title="Назад на один ход в помощнике (в самой игре ход не отменяется)" aria-label="Назад на один ход" disabled>↶</button><button id="quickRestart" title="Перезапустить уровень, сохранив открытые цвета" aria-label="Перезапустить уровень с сохранёнными цветами" hidden>↻<span style="font-size:10px;line-height:1">Повтор</span></button><button id="quickHint" title="Показать следующий ход">Показать ход</button><button id="confirmScan" hidden title="Подтвердить частично распознанное поле">Проверила поле → ход</button></div><div class="palette" id="palette"></div><div id="manualBar"><button id="manualMode" hidden>✏️ Исправить слой</button><small id="editStatus" hidden></small></div><div id="stepPlaceholder"></div><div class="board" id="board"></div><div id="fieldCheck" role="status" style="padding:9px;margin:8px 0;background:#263e34;border-radius:9px;font-size:13px"></div><div id="stepPanel" hidden><strong id="stepTitle">Следующий ход</strong><div id="stepInfo"></div><div class="controls"><button id="stepDone" hidden>✓ Сделала ход</button><button id="stepSkip" hidden>↻ Пересчитать</button></div></div><div class="controls"><button id="hint" hidden>Подсказать ход</button><button id="undo">Отменить</button><button id="apply" hidden>Выполнить подсказку</button></div><div id="message" role="status">Введи верхние цвета, оставив нижние как ?. Нажми «Подсказать ход».</div></main><button id="tubeToolsToggle" type="button" aria-label="Добавить или исправить колбочку" aria-expanded="false" aria-controls="tubeTools">＋ Колба</button>
+<section id="tubeTools" hidden role="dialog" aria-label="Ручная правка колбочек">
+ <div class="tool-head"><strong>Исправление поля</strong><button id="tubeToolsClose" type="button" aria-label="Закрыть редактор">×</button></div>
+ <label>Поставить перед <select id="tubeInsertAt" aria-label="Положение новой колбочки"></select></label>
+ <label>Новая колбочка <select id="tubePreset"><option value="masked">4 скрытых ?</option><option value="empty">Пустая</option></select></label>
+ <div class="tool-row"><button id="tubeAdd" type="button">＋ Добавить колбу</button></div>
+ <label>Убрать колбу <select id="tubeRemoveAt" aria-label="Номер удаляемой колбочки"></select></label>
+ <div class="tool-row"><button id="tubeRemove" type="button">− Удалить выбранную</button></div>
+ <small>Цвета исправляются касанием любой ячейки на поле. Для новой заполненной колбы выбери «4 скрытых ?» и раскрась нужные слои.</small>
+ <div class="tool-row"><button id="tubeReady" type="button">✓ Проверить и продолжить</button></div>
+ <div id="tubeToolsStatus" role="status"></div>
+</section>
+<div id="statusToast" role="status" aria-live="polite" hidden></div><div id="scanError" role="alert" hidden><span id="scanErrorText"></span><button id="scanErrorClose" type="button" aria-label="Закрыть сообщение">×</button></div>
 <div id="calibrationPanel" hidden role="dialog" aria-modal="true" aria-labelledby="calibrationTitle">
  <div id="calibrationCard">
   <h2 id="calibrationTitle">Настройка распознавания</h2>
@@ -308,7 +345,23 @@ function palette(){const p=$('palette');p.innerHTML='';
  close.setAttribute('aria-label','Закрыть палитру');
  close.onclick=e=>{e.stopPropagation();closePalette()};
  p.append(close);
-[['?','?','#53645d'],['×','×','#16251e'],...colors.flatMap((c,i)=>i===4?[]:[[String(i),names[i],c]])].forEach(([v,name,bg])=>{let b=document.createElement('button');b.className='swatch'+(choice===v?' sel':'');b.title=name;if(symbolHTML(v))b.innerHTML=symbolHTML(v);else b.textContent=v==='?'?'?':v==='×'?'×':symbols[Number(v)];b.setAttribute('aria-label',name);b.style.background=bg;b.onclick=()=>{choice=v;if(editingTarget){const [i,j]=editingTarget,tube=state[i],previousValue=tube[j];if(v==='×'&&j===tube.length-1){snapshot('edit');tube.pop()}else if(v!=='×'&&j<=tube.length){snapshot('edit');tube[j]=v;state[i]=tube.slice(0,Math.max(tube.length,j+1))}else{editingTarget=null;$('palette').classList.remove('editing');return}editingTarget=null;$('palette').classList.remove('editing');pending=null;plannedMoves=[];JuiceMemory.edit(i,j,v,v==='×');JuiceJournal.record(previousValue==='?'?'reveal':'edit',{tube:i+1,layer:j+1,from:previousValue,to:v},state);render();save();hint();return}palette()};p.append(b)})}function render(){palette();let b=$('board');b.innerHTML='';state.forEach((tube,i)=>{let item=document.createElement('div');item.className='item'+(pending&&pending[0]===i?' pour-source':'')+(pending&&pending[1]===i?' pour-target':'')+(!pending&&tube.at(-1)==='?'?' await-color':'');let label=document.createElement('div');label.className='tube-label';label.textContent='№ '+(i+1);item.append(label);let glass=document.createElement('div');glass.className='tube'+(selectedTube===i?' active':'');glass.onclick=(e)=>{if(!playMode||e.target!==glass)return;selectTube(i)};for(let j=0;j<cap();j++){let layer=document.createElement('div');layer.className='layer';let v=tube[j];layer.style.background=v===undefined?'#1c3029':v==='?'?'#704d3d':colors[Number(v)];if(symbolHTML(v))layer.innerHTML=symbolHTML(v);else layer.textContent=v==='?'?'?':v===undefined?'':symbols[Number(v)];layer.title='Слой '+(j+1)+' снизу: '+(v==='?'?'неизвестно':v===undefined?'пусто':names[Number(v)]);layer.onclick=()=>{if(playMode){selectTube(i);return}editingTarget=[i,j];$('palette').classList.add('editing')};glass.append(layer)}item.append(glass);if(state.length>=8&&state.length<=12&&i>=6)item.style.gridColumn=String(i-6+Math.floor((6-(state.length-6))/2)+1);b.append(item)});$('apply').disabled=!pending;$('undo').disabled=!history.length;const panel=$('stepPanel');$('quickUndo').hidden=false;$('quickUndo').disabled=!history.length;$('quickRestart').hidden=!JuiceMemory.hasLevel();$('quickRestart').title='Перезапустить уровень · открыто '+JuiceMemory.knownCount()+' скрытых символов';$('quickHint').textContent=pending?'Перелила → дальше':'Показать ход';const missing=unknownCount(state);const counts=Array(colors.length).fill(0);state.flat().forEach(v=>{if(v!=='?'&&v!==undefined&&counts[Number(v)]!==undefined)counts[Number(v)]++});const over=counts.map((n,i)=>n>cap()?names[i]+': '+n:'').filter(Boolean);$('fieldCheck').textContent=missing?'Скрытых слоёв: '+missing+'. Их не нужно угадывать.':over.length?'⚠️ Проверь распознавание: фишек одного типа больше вместимости колбочки: '+over.join(', '):'✓ Неизвестных слоёв нет. Можно искать полное решение.';panel.hidden=!pending;if(pending){const from=pending[0],to=pending[1],v=state[from].at(-1);const name=v===undefined||v==='?'?'цвет':names[Number(v)],sig=v===undefined||v==='?'?'':symbols[Number(v)];const where=i=>i<6?'верхний ряд, '+(i+1)+'-я слева':'нижний ряд, '+(i-5)+'-я слева';$('stepTitle').textContent='ИЗ №'+(from+1)+'  →  В №'+(to+1);$('stepInfo').textContent='Возьми '+where(from)+' и перелей '+pending[2]+' '+(pending[2]===1?'фишку':'фишки')+' ('+sig+' '+name+') в '+where(to)+'. Затем нажми зелёную кнопку «Перелила — следующий ход».';}}function showUndo(){// Rewinds the helper only; it does not undo a move in the game.
+[['?','?','#53645d'],['×','×','#16251e'],...colors.flatMap((c,i)=>i===4?[]:[[String(i),names[i],c]])].forEach(([v,name,bg])=>{let b=document.createElement('button');b.className='swatch'+(choice===v?' sel':'');b.title=name;if(symbolHTML(v))b.innerHTML=symbolHTML(v);else b.textContent=v==='?'?'?':v==='×'?'×':symbols[Number(v)];b.setAttribute('aria-label',name);b.style.background=bg;b.onclick=()=>{choice=v;if(editingTarget){const [i,j]=editingTarget,tube=state[i],previousValue=tube[j];if(!((v==='×'&&j===tube.length-1)||(v!=='×'&&j<=tube.length))){
+  closePalette();return;
+ }
+ snapshot('edit');
+ if(!JuiceMemory.edit(i,j,v,v==='×')){
+  history.pop();showUndo();closePalette();
+  msg('Этот слой нельзя удалить без нарушения памяти. Используй ручную правку до переливаний.');
+  render();return;
+ }
+ if(v==='×')tube.pop();
+ else{tube[j]=v;state[i]=tube.slice(0,Math.max(tube.length,j+1));}
+ closePalette();pending=null;plannedMoves=[];
+ JuiceJournal.record(previousValue==='?'?'reveal':'edit',{tube:i+1,layer:j+1,from:previousValue,to:v},state);
+ render();save();
+ if($('tubeTools').hidden)hint();
+ else $('tubeToolsStatus').textContent='Цвет сохранён. Проверь остальные слои и нажми «Проверить и продолжить».';
+ returnpalette()};p.append(b)})}function render(){palette();let b=$('board');b.innerHTML='';state.forEach((tube,i)=>{let item=document.createElement('div');item.className='item'+(pending&&pending[0]===i?' pour-source':'')+(pending&&pending[1]===i?' pour-target':'')+(!pending&&tube.at(-1)==='?'?' await-color':'');let label=document.createElement('div');label.className='tube-label';label.textContent='№ '+(i+1);item.append(label);let glass=document.createElement('div');glass.className='tube'+(selectedTube===i?' active':'');glass.onclick=(e)=>{if(!playMode||e.target!==glass)return;selectTube(i)};for(let j=0;j<cap();j++){let layer=document.createElement('div');layer.className='layer';let v=tube[j];layer.style.background=v===undefined?'#1c3029':v==='?'?'#704d3d':colors[Number(v)];if(symbolHTML(v))layer.innerHTML=symbolHTML(v);else layer.textContent=v==='?'?'?':v===undefined?'':symbols[Number(v)];layer.title='Слой '+(j+1)+' снизу: '+(v==='?'?'неизвестно':v===undefined?'пусто':names[Number(v)]);layer.onclick=()=>{if(playMode){selectTube(i);return}editingTarget=[i,j];$('palette').classList.add('editing')};glass.append(layer)}item.append(glass);if(state.length>=8&&state.length<=12&&i>=6)item.style.gridColumn=String(i-6+Math.floor((6-(state.length-6))/2)+1);b.append(item)});$('apply').disabled=!pending;$('undo').disabled=!history.length;const panel=$('stepPanel');$('quickUndo').hidden=false;$('quickUndo').disabled=!history.length;$('quickRestart').hidden=!JuiceMemory.hasLevel();$('quickRestart').title='Перезапустить уровень · открыто '+JuiceMemory.knownCount()+' скрытых символов';$('quickHint').textContent=pending?'Перелила → дальше':'Показать ход';const missing=unknownCount(state);const counts=Array(colors.length).fill(0);state.flat().forEach(v=>{if(v!=='?'&&v!==undefined&&counts[Number(v)]!==undefined)counts[Number(v)]++});const over=counts.map((n,i)=>n>cap()?names[i]+': '+n:'').filter(Boolean);$('fieldCheck').textContent=missing?'Скрытых слоёв: '+missing+'. Их не нужно угадывать.':over.length?'⚠️ Проверь распознавание: фишек одного типа больше вместимости колбочки: '+over.join(', '):'✓ Неизвестных слоёв нет. Можно искать полное решение.';panel.hidden=!pending;if(pending){const from=pending[0],to=pending[1],v=state[from].at(-1);const name=v===undefined||v==='?'?'цвет':names[Number(v)],sig=v===undefined||v==='?'?'':symbols[Number(v)];const where=i=>i<6?'верхний ряд, '+(i+1)+'-я слева':'нижний ряд, '+(i-5)+'-я слева';$('stepTitle').textContent='ИЗ №'+(from+1)+'  →  В №'+(to+1);$('stepInfo').textContent='Возьми '+where(from)+' и перелей '+pending[2]+' '+(pending[2]===1?'фишку':'фишки')+' ('+sig+' '+name+') в '+where(to)+'. Затем нажми зелёную кнопку «Перелила — следующий ход».';}}function showUndo(){// Rewinds the helper only; it does not undo a move in the game.
  $('quickUndo').hidden=false;$('quickUndo').disabled=!history.length;
 }function msg(t){
  $('message').textContent=t;
@@ -791,13 +844,13 @@ $('confirmScan').onclick=()=>{if(!state.length)return;if(unknownTop(state)){msg(
 }catch(e){msg('Ошибка подсказки: '+e.message)}};$('manualMode').onclick=()=>{playMode=false;selectedTube=null;$('mode').textContent='Режим: ввод цветов';msg('Ручное исправление: выбери цвет или ? в палитре и коснись слоя. Скриншот не нужен.');render();};$('stepDone').onclick=()=>$('apply').click();$('stepSkip').onclick=hint;$('hint').onclick=()=>{hint();(pending?$('stepPanel'):$('message')).scrollIntoView({behavior:'smooth',block:'center'})};$('apply').onclick=()=>{if(!pending){hint();return}if(!legal(state).some(m=>m.join(',')===pending.join(','))){pending=null;plannedMoves=[];render();save();msg('Ход устарел: пересчитываю.');hint();return}const completedMove=pending.slice();snapshot();JuiceMemory.move(pending);state=JuiceMemory.decorate(move(state,pending));JuiceJournal.record('move',{from:completedMove[0]+1,to:completedMove[1]+1,count:completedMove[2]},state);pending=null;if(unknownTop(state)){plannedMoves=[];render();save();hint();return}if(plannedMoves.length){const candidate=plannedMoves.shift();if(legal(state).some(m=>m.join(',')===candidate.join(','))){pending=candidate;render();save();return}plannedMoves=[]}save();hint()};$('undo').onclick=()=>{if(!history.length)return;
  // One press rewinds one POUR, including any color entries made after it.
  // When there have been no pours, undo just the last manual correction.
- const latestPour=history.findLastIndex(raw=>{try{return JSON.parse(raw).kind==='move'}catch{return false}});
+ const latestPour=history.findLastIndex(raw=>{try{return ['move','structure'].includes(JSON.parse(raw).kind)}catch{return false}});
  const index=latestPour>=0?latestPour:history.length-1;
  let entry;try{entry=JSON.parse(history[index])}catch{entry=null}
  if(!entry||!Array.isArray(entry.board)||!entry.memory){
   msg('Старая история несовместима с безопасным возвратом. Используй «Повтор».');return
  }
- if(!JuiceMemory.restore(entry.memory,{retainDiscoveries:latestPour>=0})){
+ if(!JuiceMemory.restore(entry.memory,{retainDiscoveries:latestPour>=0&&entry.kind==='move'})){
   msg('Не удалось восстановить расположение цветов. Используй «Повтор».');return
  }
  const reverted=history.length-index;history.splice(index);
@@ -833,4 +886,89 @@ $('confirmScan').onclick=()=>{if(!state.length)return;if(unknownTop(state)){msg(
  };
  document.body.append(button);
 })();
+
+function refreshTubeEditor(){
+ const add=$('tubeInsertAt'),remove=$('tubeRemoveAt');
+ const current=Number(add.value),oldRemove=Number(remove.value);
+ add.innerHTML='';remove.innerHTML='';
+ for(let k=0;k<=state.length;k++){
+  const opt=document.createElement('option');opt.value=String(k);
+  opt.textContent=k===state.length?'В конец':'Перед №'+(k+1);
+  add.append(opt);
+ }
+ for(let k=0;k<state.length;k++){
+  const opt=document.createElement('option');opt.value=String(k);
+  opt.textContent='№'+(k+1)+(state[k].length?' · '+state[k].length+' сл.':' · пустая');
+  remove.append(opt);
+ }
+ const twoEmpty=state.length>=8&&!state.at(-1).length&&!state.at(-2).length;
+ const suggested=twoEmpty?state.length-2:state.length;
+ add.value=String(Number.isInteger(current)&&current>=0&&current<=state.length&&
+  add.dataset.touched==='yes'?current:suggested);
+ remove.value=String(Number.isInteger(oldRemove)&&oldRemove>=0&&oldRemove<state.length?oldRemove:Math.max(0,state.length-1));
+ $('tubeRemove').disabled=state.length<=3;
+ $('tubeAdd').disabled=state.length>=20;
+}
+function tubeEditStatus(message){
+ $('tubeToolsStatus').textContent=message;
+}
+$('tubeToolsToggle').onclick=()=>{
+ const opened=$('tubeTools').hidden;
+ if(opened){refreshTubeEditor();closePalette();}
+ $('tubeTools').hidden=!opened;
+ $('tubeToolsToggle').setAttribute('aria-expanded',String(opened));
+};
+$('tubeToolsClose').onclick=()=>{
+ $('tubeTools').hidden=true;$('tubeToolsToggle').setAttribute('aria-expanded','false');
+};
+$('tubeInsertAt').onchange=()=>{$('tubeInsertAt').dataset.touched='yes'};
+$('tubeAdd').onclick=()=>{
+ if(state.length>=20){tubeEditStatus('Допустимо не более 20 колбочек.');return}
+ const index=Number($('tubeInsertAt').value);
+ const contents=$('tubePreset').value==='empty'?[]:Array(cap()).fill('?');
+ if(!Number.isInteger(index)||index<0||index>state.length)return;
+ snapshot('structure');
+ if(!JuiceMemory.insertTube(index,contents)){
+  history.pop();showUndo();tubeEditStatus('Не удалось добавить колбочку.');return;
+ }
+ state.splice(index,0,contents);$('count').value=state.length;
+ pending=null;plannedMoves=[];selectedTube=null;editingTarget=null;playMode=false;
+ closePalette();$('confirmScan').hidden=true;$('quickHint').disabled=false;
+ JuiceJournal.record('insert-tube',{at:index+1,fill:$('tubePreset').value},state);
+ render();save();$('tubeInsertAt').dataset.touched='';refreshTubeEditor();
+ tubeEditStatus('Добавлена колбочка №'+(index+1)+'. Нажми её слой, чтобы выбрать цвет.');
+};
+$('tubeRemove').onclick=()=>{
+ const index=Number($('tubeRemoveAt').value);
+ if(!Number.isInteger(index)||index<0||index>=state.length)return;
+ if(state.length<=3){tubeEditStatus('Нужно оставить минимум три колбочки.');return}
+ if(!confirm('Удалить колбочку №'+(index+1)+' из помощника? Это не меняет игру.'))return;
+ snapshot('structure');
+ if(!JuiceMemory.removeTube(index)){
+  history.pop();showUndo();
+  tubeEditStatus('Колбочку с уже перемещёнными фишками нельзя безопасно удалить. Используй «Повтор».');return;
+ }
+ state.splice(index,1);$('count').value=state.length;
+ pending=null;plannedMoves=[];selectedTube=null;editingTarget=null;
+ closePalette();$('confirmScan').hidden=true;$('quickHint').disabled=false;
+ JuiceJournal.record('remove-tube',{at:index+1},state);
+ render();save();$('tubeInsertAt').dataset.touched='';refreshTubeEditor();
+ tubeEditStatus('Колбочка удалена. Проверь номера и цвета.');
+};
+$('tubeReady').onclick=()=>{
+ const n=state.reduce((a,t)=>a+t.length,0),counts=new Map();
+ for(const tube of state)for(const v of tube)if(v!=='?')counts.set(v,(counts.get(v)||0)+1);
+ if(!n||n%cap()){
+  tubeEditStatus('Число фишек '+n+' должно делиться на '+cap()+'. Проверь пропущенные колбы или слои.');return
+ }
+ if([...counts.values()].some(v=>v>cap())){
+  tubeEditStatus('Одного из цветов больше '+cap()+' штук. Исправь распознавание.');return
+ }
+ if(state.some(t=>t.at(-1)==='?')){
+  tubeEditStatus('Укажи открытый верхний цвет вместо вопросика.');return
+ }
+ $('tubeTools').hidden=true;$('tubeToolsToggle').setAttribute('aria-expanded','false');
+ $('confirmScan').hidden=true;$('quickHint').disabled=false;
+ pending=null;plannedMoves=[];save();hint();
+};
 if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});</script></body></html>
