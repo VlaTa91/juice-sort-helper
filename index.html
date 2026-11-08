@@ -789,16 +789,21 @@ $('confirmScan').onclick=()=>{if(!state.length)return;if(unknownTop(state)){msg(
  if(editingTarget&&unknownTop(state)){$('palette').classList.add('editing');return}
  if(pending){$('apply').click()}else hint()
 }catch(e){msg('Ошибка подсказки: '+e.message)}};$('manualMode').onclick=()=>{playMode=false;selectedTube=null;$('mode').textContent='Режим: ввод цветов';msg('Ручное исправление: выбери цвет или ? в палитре и коснись слоя. Скриншот не нужен.');render();};$('stepDone').onclick=()=>$('apply').click();$('stepSkip').onclick=hint;$('hint').onclick=()=>{hint();(pending?$('stepPanel'):$('message')).scrollIntoView({behavior:'smooth',block:'center'})};$('apply').onclick=()=>{if(!pending){hint();return}if(!legal(state).some(m=>m.join(',')===pending.join(','))){pending=null;plannedMoves=[];render();save();msg('Ход устарел: пересчитываю.');hint();return}const completedMove=pending.slice();snapshot();JuiceMemory.move(pending);state=JuiceMemory.decorate(move(state,pending));JuiceJournal.record('move',{from:completedMove[0]+1,to:completedMove[1]+1,count:completedMove[2]},state);pending=null;if(unknownTop(state)){plannedMoves=[];render();save();hint();return}if(plannedMoves.length){const candidate=plannedMoves.shift();if(legal(state).some(m=>m.join(',')===candidate.join(','))){pending=candidate;render();save();return}plannedMoves=[]}save();hint()};$('undo').onclick=()=>{if(!history.length)return;
- let entry;try{entry=JSON.parse(history[history.length-1])}catch{entry=null}
+ // One press rewinds one POUR, including any color entries made after it.
+ // When there have been no pours, undo just the last manual correction.
+ const latestPour=history.findLastIndex(raw=>{try{return JSON.parse(raw).kind==='move'}catch{return false}});
+ const index=latestPour>=0?latestPour:history.length-1;
+ let entry;try{entry=JSON.parse(history[index])}catch{entry=null}
  if(!entry||!Array.isArray(entry.board)||!entry.memory){
   msg('Старая история несовместима с безопасным возвратом. Используй «Повтор».');return
  }
- if(!JuiceMemory.restore(entry.memory,{retainDiscoveries:entry.kind==='move'})){
+ if(!JuiceMemory.restore(entry.memory,{retainDiscoveries:latestPour>=0})){
   msg('Не удалось восстановить расположение цветов. Используй «Повтор».');return
  }
- history.pop();state=JuiceMemory.decorate(entry.board);pending=null;plannedMoves=[];
+ const reverted=history.length-index;history.splice(index);
+ state=JuiceMemory.decorate(entry.board);pending=null;plannedMoves=[];
  selectedTube=null;editingTarget=null;closePalette();
- JuiceJournal.record('undo',{kind:entry.kind||'move',helperOnly:true},state);
+ JuiceJournal.record('undo',{kind:latestPour>=0?'move':'edit',stepsReverted:reverted,helperOnly:true},state);
  save();render();hint();
 };$('reset').onclick=()=>{if(confirm('Очистить уровень?'))init(Math.min(20,Math.max(3,Number($('count').value)||12)),Math.min(8,Math.max(2,cap()||4)))};try{let old=JSON.parse(localStorage.getItem('juice-state-manual-v8'));if(old?.state?.length){$('capacity').value=old.capacity||4;$('count').value=old.state.length;state=old.state.map(t=>t.map(v=>v==='4'?'0':v));history=Array.isArray(old.history)?old.history.filter(h=>{try{const e=JSON.parse(h);return Array.isArray(e.board)&&e.memory&&e.kind}catch{return false}}):[];plannedMoves=Array.isArray(old.plannedMoves)?old.plannedMoves:[];pending=Array.isArray(old.pending)?old.pending:null;if(pending&&!legal(state).some(m=>m.join(',')===pending.join(','))){pending=null;plannedMoves=[]}if(!JuiceMemory.attach(state))JuiceMemory.begin(state,true);render();JuiceJournal.resume(state)}else if(JuiceMemory.hasLevel()){state=JuiceMemory.restart();$('capacity').value=4;$('count').value=state.length;history=[];pending=null;plannedMoves=[];render();save();JuiceJournal.resume(state)}else init()}catch{if(JuiceMemory.hasLevel()){state=JuiceMemory.restart();$('capacity').value=4;$('count').value=state.length;history=[];pending=null;plannedMoves=[];render();save();JuiceJournal.resume(state)}else init()}$('stepPlaceholder').replaceWith($('stepPanel'));document.body.append($('quickActions'));document.body.append($('board'));document.body.append($('palette'));const reasonNode=document.createElement('div');reasonNode.id='moveReason';reasonNode.hidden=true;reasonNode.setAttribute('role','status');document.body.append(reasonNode);const uploadLabel=$('uploadShot').closest('label');uploadLabel.id='uploadBottom';uploadLabel.firstChild.textContent='Выбрать файл';$('quickActions').prepend(uploadLabel);(function(){
  const button=document.createElement('button');
