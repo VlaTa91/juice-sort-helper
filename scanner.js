@@ -39,7 +39,7 @@ function autoRecognizeGame(canvas){
    layouts.push({n,centers,xshift,average,min,topAverage,score:average+1.5*n+topAverage*1.2});
  }
  layouts.sort((a,b)=>b.score-a.score);
- if(!layouts.length)return {valid:false,reason:'Не найдены границы нижнего ряда колбочек'};
+ // Alternative geometric detection below also handles empty bottom tubes.
  const reference={
   '0':[[148,133,74],[120,116,80],[125,109,74],[119,97,47]],
   '1':[[134,158,195],[112,130,175],[97,135,159],[81,120,151]],
@@ -55,7 +55,16 @@ function autoRecognizeGame(canvas){
  function classify([r,g,b]){
   // Saturated pink must not be mistaken for a gray dash (tube 7 regression).
   if(r>=170&&r-g>30&&b-g>24&&b>r-65)return '6';
+  // Distinguish dark emerald heart tiles from pale-green triangles
+  // using their tile backgrounds, not the white glyph or glass border.
+  // Regression: level 5, tubes 4 and 6 contain hearts, NOT triangles.
+  if(g>r+20&&g>b+15){
+   if(g>=144&&(r>=94||b>=88))return '3';
+   if(g<151&&r<97&&b<90)return '5';
+  }
   if(g>=r+3&&Math.abs(g-b)<19&&r+g+b<345)return '_';
+  // Empty glass is neutral dark green, not a hidden brown layer.
+  if(Math.max(r,g,b)<=110&&Math.abs(r-g)<22&&Math.abs(g-b)<24&&(b>=r-6||g>=r-1))return '_';
   if(r>50&&r<145&&r-g>11&&g-b>1&&g-b<29&&g<113&&b<94)return '?';
   if(Math.abs(r-g)<13&&Math.abs(g-b)<15&&r>111&&r<190)return '9';
   let bestType='X',bestDist=Infinity;
@@ -73,6 +82,27 @@ function autoRecognizeGame(canvas){
  // Using a single left margin previously confused pink with gray when
  // slight screenshot translations placed the sample on the glass border.
  function sampleTile(x,y){
+  // Vote over side margins at multiple heights. A white heart glyph has
+  // light-green anti-aliasing that resembles the triangle's tile, while the
+  // *actual* dark-green background is visible above and below the glyph.
+  const votes=new Map(),samples=[];
+  for(const offset of [-7,-3,3,7]){
+   for(const dx of [0,17]){
+    const rgb=medianRGB(x+dx,y+offset),type=classify(rgb);
+    if(type==='X')continue;
+    votes.set(type,(votes.get(type)||0)+1);
+    samples.push({rgb,type});
+   }
+  }
+  const ranked=[...votes].sort((a,b)=>b[1]-a[1]);
+  if(ranked.length){
+   // Green heart paint is much darker than the pale icon highlight;
+   // require more than one independent dark-green sample to override it.
+   if(votes.has('3')&&votes.has('5')&&votes.get('5')>=2&&
+      votes.get('5')>=votes.get('3')-1)return '5';
+   if(ranked[0][1]>=3&&ranked[0][1]>=(ranked[1]?.[1]||0)+1)
+    return ranked[0][0];
+  }
   const left=medianRGB(x,y),right=medianRGB(x+17,y);
   const a=classify(left),b=classify(right);
   if(a===b)return a;
@@ -88,8 +118,10 @@ function autoRecognizeGame(canvas){
   return distances[0].dist<100?distances[0].type:'X';
  }
  function scanCandidate(chosen,shiftX,shiftY){
- const xs=[50,100,150,200,250,300,...chosen.centers.map(x=>x-chosen.xshift)];
- const topYs=[257,285,313,338],bottomYs=[416,445,473,501],state=[],rawRows=[];
+ const xs=chosen.geometry
+  ? [50,100,150,200,250,300].map(x=>x+chosen.geometry.shift).concat(chosen.centers)
+  : [50,100,150,200,250,300,...chosen.centers.map(x=>x-chosen.xshift)];
+ const topYs=chosen.geometry?.topYs||[257,285,313,338],bottomYs=chosen.geometry?.bottomYs||[416,445,473,501],state=[],rawRows=[];
  let bad=0,visible=0,hidden=0,filled=0;
  for(let i=0;i<xs.length;i++){
   const yy=i<6?topYs:bottomYs;
@@ -117,7 +149,8 @@ function autoRecognizeGame(canvas){
  const fullTubes=state.filter(t=>t.length===4);
  const maskedStart=chosen.n===6&&state.length===12&&filled===10
    &&fullTubes.length===10&&hidden>=8
-   &&fullTubes.every(t=>t[3]!=='X'&&t[3]!=='?'&&t[3]!=='_');
+   &&fullTubes.every(t=>t[3]!=='X'&&t[3]!=='?'&&t[3]!=='_')
+   &&fullTubes.every(t=>t.slice(0,3).every(v=>v==='?'));
  if(maskedStart){
    for(let i=0;i<state.length;i++)if(state[i].length===4){
      state[i]=['?','?','?',state[i][3]];
@@ -175,6 +208,92 @@ function autoRecognizeGame(canvas){
   reason:valid?'':('Нужно проверить символы: '+bad+', нераспознанных верхних слоёв: '+unknownTop),
   shiftX,shiftY};
  }
+ // Find the two REAL tube rows by their continuous vertical glass borders.
+ // Coordinates from an older phone layout must not dictate which layers are sampled.
+ function sideEdge(x,y){
+  x=Math.round(x);y=Math.round(y);
+  if(x<20||x>=width-20||y<0||y>=height)return 0;
+  let left=0,right=0;
+  for(let d=-17;d<=-13;d++)left=Math.max(left,Math.abs(intensity(x+d+1,y)-intensity(x+d,y)));
+  for(let d=12;d<=17;d++)right=Math.max(right,Math.abs(intensity(x+d+1,y)-intensity(x+d,y)));
+  return left+right;
+ }
+ function strength(x,band){
+  let total=0,n=0;
+  for(let y=band.start+12;y<=band.end-8;y+=4){total+=sideEdge(x,y);n++}
+  return n?total/n:0;
+ }
+ function detectRows(){
+  let best=null;
+  for(let shift=-12;shift<=12;shift+=3){
+   const row=[];
+   for(let y=90;y<=600;y++){
+    let n=0;for(const x of [50,100,150,200,250,300])n+=sideEdge(x+shift,y);
+    row.push(n/6);
+   }
+   const smooth=row.map((_,i)=>{
+    let n=0,count=0;for(let k=Math.max(0,i-2);k<=Math.min(row.length-1,i+2);k++){n+=row[k];count++}
+    return n/count;
+   });
+   const bands=[];
+   let start=-1,last=-1;
+   for(let i=0;i<=smooth.length+8;i++){
+    if(i<smooth.length&&smooth[i]>22){if(start<0)start=i;last=i}
+    if(start>=0&&(i>=smooth.length||i-last>8)){
+     if(last-start>=85){
+      const startY=start+90,endY=last+90;
+      const mean=smooth.slice(start,last+1).reduce((a,b)=>a+b,0)/(last-start+1);
+      if(endY-startY<=190&&mean>24)bands.push({start:startY,end:endY,mean});
+     }
+     start=-1;last=-1;
+    }
+   }
+   for(let i=0;i<bands.length;i++)for(let j=i+1;j<bands.length;j++){
+    const a=bands[i],b=bands[j];
+    if(b.start-a.end<45||b.start-a.start>305)continue;
+    const score=(a.mean*(a.end-a.start)+b.mean*(b.end-b.start));
+    if(!best||score>best.score)best={top:a,bottom:b,shift,score};
+   }
+  }
+  if(!best)return null;
+  const slots=band=>Array.from({length:4},(_,j)=>
+   Math.round(band.start+(j+.65)*(band.end-band.start)/4));
+  best.topYs=slots(best.top);best.bottomYs=slots(best.bottom);
+  return best;
+ }
+ // Try complete layouts first. An empty tube still has glass borders, so
+ // returning the first two-tube match silently dropped the other four tubes.
+ const detected=detectRows();
+ if(detected){
+  const candidates=[];
+  for(let n=2;n<=6;n++)for(const correction of [-3,0,3]){
+   const centers=Array.from({length:n},(_,i)=>
+    175+detected.shift+correction+(i-(n-1)/2)*50);
+   const strengths=centers.map(x=>strength(x,detected.bottom));
+   if(Math.min(...strengths)<17)continue;
+   const score=strengths.reduce((a,b)=>a+Math.max(0,b-15),0);
+   candidates.push({n,centers,xshift:0,score,geometry:detected});
+  }
+  candidates.sort((a,b)=>b.score-a.score);
+  let uncertain=null;
+  for(const chosen of candidates)for(const dy of [0,-2,2,-4,4]){
+   const found=scanCandidate(chosen,0,dy);
+   const total=found.state.reduce((n,t)=>n+t.length,0);
+   const actual=found.state.flat().filter(c=>c!=='?'&&c!=='X');
+   const knownCounts={};
+   for(const token of actual)knownCounts[token]=(knownCounts[token]||0)+1;
+   const plausible=total%4===0&&total>=8&&
+    Object.keys(knownCounts).length<=total/4&&
+    Object.values(knownCounts).every(n=>n<=4);
+   if(found.valid&&plausible)return found;
+   // A partial 12-tube read is preferable to a confidently wrong 8-tube read.
+   if((!uncertain||found.count>uncertain.count||found.count===uncertain.count&&
+      found.bad+found.unknownTop<uncertain.bad+uncertain.unknownTop)&&
+      (plausible||found.count===12))uncertain=found;
+  }
+  if(uncertain)return {...uncertain,valid:false,reason:'Проверь неуверенные слои; все найденные колбочки сохранены'};
+ }
+
  let best=null;
  const shifts=[0,-3,3,-6,6,-9,9,-12,12,-16,16,-20,20,-24,24,-28,28];
  for(const chosen of layouts.slice(0,24)){
