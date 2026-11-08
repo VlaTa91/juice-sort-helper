@@ -173,12 +173,15 @@ function autoRecognizeGame(canvas){
    visible=state.reduce((n,t)=>n+t.filter(v=>v!=='?').length,0);
    hidden=state.reduce((n,t)=>n+t.filter(v=>v==='?').length,0);
  }
- if(hidden===0&&chosen.n===3&&state.reduce((n,t)=>n+t.length,0)===28){
+ const allCounts={};for(const t of state)for(const c of t)if(c!=="?"&&c!=="X")
+   allCounts[c]=(allCounts[c]||0)+1;
+ if(hidden===0&&chosen.n===3&&state.reduce((n,t)=>n+t.length,0)===28&&
+    (bad>0||Object.values(allCounts).some(n=>n!==4))){
   const visiblePalette={
-   '9':[[158,156,152],[159,158,154],[152,153,149],[149,147,144]],
+   '9':[[203,196,193],[166,165,163],[159,159,153],[158,156,152],[152,153,149],[149,147,144]],
    '10':[[164,39,35],[170,57,55],[146,45,45],[157,37,39]],
    '2':[[202,96,30],[202,105,46],[200,94,31],[179,93,47]],
-   '8':[[217,181,129],[218,175,119],[212,169,119],[180,158,120]],
+   '8':[[236,213,177],[223,188,133],[217,181,129],[218,175,119],[212,169,119],[180,158,120]],
    '0':[[141,112,55],[133,101,44],[143,121,78],[149,122,66]],
    '1':[[99,142,195],[75,133,195],[105,143,186],[98,146,175]],
    '5':[[33,101,32],[26,111,30],[42,116,46],[58,111,38]]
@@ -306,8 +309,10 @@ function autoRecognizeGame(canvas){
      // much stronger colored edges than the two empty glass outlines.
      const opening=found.hidden>=found.filled*2&&found.filled>=6;
      const spare=found.count-found.filled;
-     const quality=(opening? 120-Math.abs(spare-2)*100:0)+
-       found.count*2+chosen.score*.03-Math.abs(dy)*.5;
+     const fullySeen=found.hidden===0;
+     const quality=(opening?120-Math.abs(spare-2)*100:
+       fullySeen&&spare===2?35:0)+
+       found.count*3+chosen.score*.03-Math.abs(dy)*.5;
      if(!bestValid||quality>bestValid.quality)
        bestValid={found,quality};
      continue;
