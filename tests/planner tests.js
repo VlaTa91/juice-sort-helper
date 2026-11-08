@@ -157,6 +157,48 @@ function testFiveBottomTubes(){
  assert.equal(found.state[9].length,0);
  assert.equal(found.state[10].length,0);
 }
+
+function testSevenColorLevelWithThreeBottomTubes(){
+ // Last observed error: the game has 6 top and 3 bottom tubes, including
+ // one filled bottom and two empty. Reject a fake 8-tube / 6+2 reading.
+ const source=fs.readFileSync(path.join(root,"scanner.js"),"utf8");
+ const width=351,height=768,pixels=new Uint8ClampedArray(width*height*4);
+ function rect(x0,y0,x1,y1,rgb){
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+   if(x<0||x>=width||y<0||y>=height)continue;
+   const n=(y*width+x)*4;
+   pixels[n]=rgb[0];pixels[n+1]=rgb[1];pixels[n+2]=rgb[2];pixels[n+3]=255;
+  }
+ }
+ rect(0,0,width-1,height-1,[28,47,43]);
+ const sample={
+  "0":[132,105,50],"1":[105,150,205],"2":[211,111,49],
+  "5":[34,113,33],"8":[236,213,177],"9":[159,159,153],
+  "10":[184,80,80],"_":[55,68,66]
+ };
+ const types=["0","1","2","5","8","9","10"];
+ const board=Array.from({length:7},(_,i)=>Array.from({length:4},(_,j)=>
+  types[((i*4+j)*11)%types.length]));
+ function paint(index,x,top){
+  const row=board[index]||["_","_","_","_"];
+  for(let j=0;j<4;j++)
+   rect(x-14,top+34*j,x+14,top+34*j+33,sample[row[j]]);
+  rect(x-16,top-2,x-15,top+136,[178,185,180]);
+  rect(x+15,top-2,x+16,top+136,[178,185,180]);
+ }
+ for(let i=0;i<6;i++)paint(i,50+50*i,182);
+ for(let i=0;i<3;i++)paint(i+6,125+50*i,382);
+ const ctx={};vm.runInNewContext(source,ctx);
+ const canvas={getContext:()=>({getImageData:()=>({data:pixels})})};
+ const result=ctx.autoRecognizeGame(canvas);
+ assert.equal(result.valid,true,"Fully known seven-color level should be valid: "+result.reason);
+ assert.equal(result.count,9,"Do not silently drop the third lower tube");
+ assert.equal(result.filled,7,"Seven filled tubes plus two empty");
+ assert.equal(result.hidden,0,"All colors were visible");
+ assert.equal(result.state[7].length,0);
+ assert.equal(result.state[8].length,0);
+ assert(source.includes("impossibleCounts"),"Validate color counts for every geometry");
+}
 function testPreferShorterSource(){
  // Both red crosses are on top. Pour 9 -> 8 instead of 8 -> 9:
  // the former leaves only one unknown piece in tube 9.
@@ -226,6 +268,16 @@ function testStablePalette(){
  assert(html.includes("JuiceMemory.restore(entry.memory"),"Undo must restore token identity memory");
  assert(html.includes("history.findLastIndex"),"Undo must jump past manual color-reveal edits to the last pour");
  assert(html.includes("history=Array.isArray(old.history)?old.history.filter"),"Old unsafe undo snapshots must not be replayed");
+ assert(html.includes('id="tubeToolsToggle"'),"Manual tube editor must be visible");
+ assert(html.includes('id="tubeInsertAt"'),"Manual editor must offer insertion position");
+ assert(html.includes('id="tubePreset"'),"Manual editor must support filled and empty tubes");
+ assert(html.includes('JuiceMemory.insertTube('),"Adding a tube must update identity memory");
+ assert(html.includes('JuiceMemory.removeTube('),"Removing a tube must update identity memory");
+ assert(html.includes('id="tubeReady"'),"Manual repair must validate before hinting");
+ const inline=html.split("<script>").slice(-1)[0].split("</script>")[0];
+ assert(inline.length>1000,"Embedded application script must exist");
+ assert.doesNotThrow(()=>new vm.Script(inline,{filename:"index.html"}),
+  "Inline application script must parse without syntax errors");
  assert(html.includes("reasonNode.id='moveReason'"),
   "The app should display the purpose of each suggestion");
 }
@@ -245,7 +297,7 @@ async function testJournal(){
  assert.equal(runs[0].events.length,2);
 }
 async function main(){
- testBasics();testScannerColors();testScannerDynamicRows();testFiveBottomTubes();testPreferShorterSource();testFinishPurpleBeforeBlue();testHeartColorSamples();testStablePalette();await testJournal();
+ testBasics();testScannerColors();testScannerDynamicRows();testFiveBottomTubes();testSevenColorLevelWithThreeBottomTubes();testPreferShorterSource();testFinishPurpleBeforeBlue();testHeartColorSamples();testStablePalette();await testJournal();
  const matrix=[{colors:3,seeds:12},{colors:4,seeds:20},{colors:8,seeds:10},{colors:10,seeds:6,start:11}];
  const summary=[];
  for(const item of matrix){
