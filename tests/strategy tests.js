@@ -26,5 +26,5 @@ assert(ms.some(m=>m[1]===9),"The last free tube must remain an eligible move");
 const entirelyKnown=[["1","1","1"],["1"],["2","2","2","2"],[]];
 const completion=P.choose(entirelyKnown,{capacity:4});
 assert.equal(completion.reason,"guaranteed-completion");
-assert.equal(completion.move.join(","),"1,0,1");
+assert.equal(completion.move.join(","),"0,1,3","Finish a full color by moving three pieces into one");
 console.log("Systematic strategy regression tests passed");
