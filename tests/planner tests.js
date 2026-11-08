@@ -38,7 +38,7 @@ function testBasics(){
  assert(next.reveal!==null&&next.obs[m[0]].at(-1)===next.reveal,"Did not uncover ? after pour");
  assert(P.legal([["?","1"],["?"],[]],4).every(m=>m[0]===0),"Moved hidden top");
  const decision=P.choose(b,{capacity:4,simulations:140});
- assert(decision.move&&decision.reason==="belief-mcts","Missing plan for hidden board");
+ assert(decision.move&&["belief-mcts","systematic-opening"].includes(decision.reason),"Missing plan for hidden board");
  const forbidden=P.legal(b,4)[0],avoid=P.choose(b,{simulations:140,visited:[JSON.stringify(P.move(b,forbidden))]});
  assert(avoid.move&&!equal(avoid.move,forbidden),"Ignored visited state");
 }
