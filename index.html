@@ -382,7 +382,7 @@ function hint(){
  const counts={};for(const t of state)for(const v of t)if(v!=='?')counts[v]=(counts[v]||0)+1;const excessive=Object.entries(counts).filter(([v,n])=>n>cap());if(excessive.length){msg('Проверь цвета: '+excessive.map(([v,n])=>names[Number(v)]+' — '+n).join(', ')+'. Исправь ошибочно распознанные слои.');render();return;}
  if(unknownCount(state)){
    if(unknownTop(state)){render();const ix=state.findIndex(t=>t.at(-1)==='?');if(ix>=0){editingTarget=[ix,state[ix].length-1];$('palette').classList.add('editing');$('quickHint').textContent='Выбери цвет';msg('Колбочка №'+(ix+1)+': какой цвет открылся? Нажми символ в палитре.')}return}
-   const analysis=JuicePlanner.choose(state,{capacity:cap(),simulations:340,depth:28,visited:history});
+   const analysis=JuicePlanner.choose(state,{capacity:cap(),simulations:340,depth:28,visited:history.map(h=>{try{return JSON.stringify(JSON.parse(h).board)}catch{return h}})});
    if(!analysis.move){
      if(analysis.reason==='no-legal'||analysis.reason==='cycle-only')JuiceJournal.finish('blocked',state);
      render();save();
@@ -395,7 +395,7 @@ function hint(){
    if(reason){reason.textContent=analysis.reason==='guaranteed-completion'
      ?'№'+(pending[0]+1)+' → №'+(pending[1]+1)+': собрать все 4 одинаковых символа'
      :analysis.reason==='systematic-opening'
-     ?'№'+(pending[0]+1)+' → №'+(pending[1]+1)+': сначала самая частая открытая группа, при равенстве меньший номер'
+     ?'№'+(pending[0]+1)+' → №'+(pending[1]+1)+': открываем ближайший нижний скрытый слой; при равенстве частая группа и меньший номер'
      :'№'+(pending[0]+1)+' → №'+(pending[1]+1)+': оценка цепочек, свободных мест и риска, без гарантии';
      reason.hidden=false}
    const remain=Object.entries(analysis.distribution.remaining||{})
