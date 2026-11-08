@@ -96,15 +96,17 @@ function strategicValue(s,m,cap){
  if(to.length&&from.length<to.length)score+=3;
  return score;
 }
-// On a fresh board with no available merge, open the most frequent visible
-// top color; use the earliest tube as a reproducible tie-breaker. Never
-// commit to a second speculative pour before observing the first reveal.
+// Without an available known-color merge, prefer exposing a layer closest
+// to the bottom of its tube. That can release an entire tube soon. Among
+// equally shallow sources prefer more common top colors, then lower indices.
+// Never commit to another speculative pour before observing the reveal.
 function systematicOpening(s,moves){
  if(moves.some(m=>s[m[1]].length))return null;
  const candidates=moves.filter(m=>!s[m[1]].length&&s[m[0]].length>m[2]);
  candidates.sort((a,b)=>{
+  const remaining=(s[a[0]].length-a[2])-(s[b[0]].length-b[2]);
   const freq=topPresence(s,s[b[0]].at(-1))-topPresence(s,s[a[0]].at(-1));
-  return freq||a[0]-b[0]||a[1]-b[1];
+  return remaining||freq||a[0]-b[0]||a[1]-b[1];
  });
  return candidates[0]||null;
 }
