@@ -89,6 +89,14 @@ function strategicValue(s,m,cap){
  if(!source.length&&to.length)score+=30;
  if(!source.length&&!to.length)score-=30;
  if(source.at(-1)==="?")score+=7;
+ // Already-revealed colors below a top run are actionable information.
+ // Unlike an unknown '?' they may enable a planned matching chain immediately.
+ if(source.length&&source.at(-1)!=="?"&&source.at(-1)!==color){
+  const exposed=source.at(-1);
+  const otherKnown=next.reduce((count,t,k)=>count+
+    (k===i?0:t.filter(v=>v===exposed).length),0);
+  score+=10+Math.min(8,otherKnown*2);
+ }
  if(source.length&&source.at(-1)!=="?"&&next.some((t,k)=>k!==i&&t.length<cap&&t.at(-1)===source.at(-1)))score+=9;
  score+=23*(emptiesAfter-emptiesBefore);
  if(emptiesBefore===1&&emptiesAfter===0)score-=18;
@@ -156,7 +164,11 @@ if(completed.length){
  });
  return {move:completed[0],reason:"guaranteed-completion",distribution,simulations:0};
 }
-const opening=systematicOpening(s,available);
+// Early boards have no known layers below the uppermost tokens. On later
+// boards, never return solely on the frequency of visible TOP symbols:
+ // the Monte-Carlo planner must compare chains exposing the known buried ones.
+const buriedKnown=s.reduce((n,t)=>n+t.slice(0,-1).filter(v=>v!=="?").length,0);
+const opening=buriedKnown>=2?null:systematicOpening(s,available);
 if(opening&&distribution.unknown)return {move:opening,reason:"systematic-opening",distribution,simulations:0};
 if(!distribution.unknown){const sorted=available.map(m=>({m,score:moveScore(s,m,cap)})).sort((a,b)=>b.score-a.score||a.m[0]-b.m[0]||a.m[1]-b.m[1]);
 return {move:sorted[0].m,reason:"visible-only",distribution,simulations:0}}
