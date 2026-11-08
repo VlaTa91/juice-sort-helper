@@ -82,6 +82,27 @@ function autoRecognizeGame(canvas){
  // Using a single left margin previously confused pink with gray when
  // slight screenshot translations placed the sample on the glass border.
  function sampleTile(x,y){
+  // Vote over side margins at multiple heights. A white heart glyph has
+  // light-green anti-aliasing that resembles the triangle's tile, while the
+  // *actual* dark-green background is visible above and below the glyph.
+  const votes=new Map(),samples=[];
+  for(const offset of [-7,-3,3,7]){
+   for(const dx of [0,17]){
+    const rgb=medianRGB(x+dx,y+offset),type=classify(rgb);
+    if(type==='X')continue;
+    votes.set(type,(votes.get(type)||0)+1);
+    samples.push({rgb,type});
+   }
+  }
+  const ranked=[...votes].sort((a,b)=>b[1]-a[1]);
+  if(ranked.length){
+   // Green heart paint is much darker than the pale icon highlight;
+   // require more than one independent dark-green sample to override it.
+   if(votes.has('3')&&votes.has('5')&&votes.get('5')>=2&&
+      votes.get('5')>=votes.get('3')-1)return '5';
+   if(ranked[0][1]>=3&&ranked[0][1]>=(ranked[1]?.[1]||0)+1)
+    return ranked[0][0];
+  }
   const left=medianRGB(x,y),right=medianRGB(x+17,y);
   const a=classify(left),b=classify(right);
   if(a===b)return a;
