@@ -51,6 +51,13 @@ function testScannerColors(){
  assert.equal(classify([230,174,224]),"6","Tube 7 pink misidentified");
  assert.equal(classify([229,169,212]),"6","Pink top token misidentified");
  assert.equal(classify([154,159,160]),"9","Gray dash misidentified");
+ assert.equal(classify([203,196,193]),"9","Bright gray dash must stay gray");
+ assert.equal(classify([166,165,163]),"9","Lower gray dash must stay gray");
+ assert.equal(classify([236,213,177]),"8","Bright beige diamond must not turn into ?");
+ assert.equal(classify([223,188,133]),"8","Beige diamond tile must stay beige");
+ assert.equal(classify([134,112,82]),"8","Shaded beige edge must not be read as hidden");
+ assert.equal(classify([100,64,51]),"?","Real hidden brown layer must stay hidden");
+ assert.equal(classify([89,51,36]),"?","Dark hidden brown layer must stay hidden");
 }
 function testScannerDynamicRows(){
  // Regression for the user screenshot: 12 tubes, 10 occupied and 2 empty,
@@ -101,6 +108,54 @@ function testScannerDynamicRows(){
  assert.equal(result.state[11].length,0);
 }
 
+
+function testFiveBottomTubes(){
+ // Six upper tubes, three occupied lower tubes and two empty lower tubes.
+ // The scanner must not mistake the three occupied bottom vessels for the
+ // full lower-row count; even the empty glass outlines are real tubes.
+ const scanner=fs.readFileSync(path.join(root,"scanner.js"),"utf8");
+ const width=351,height=768,pixels=new Uint8ClampedArray(width*height*4);
+ function rect(x0,y0,x1,y1,color){
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+   if(x<0||x>=width||y<0||y>=height)continue;
+   const k=(y*width+x)*4;
+   pixels[k]=color[0];pixels[k+1]=color[1];pixels[k+2]=color[2];pixels[k+3]=255;
+  }
+ }
+ rect(0,0,width-1,height-1,[28,47,43]);
+ const sample={
+  "10":[184,80,80],"6":[241,167,228],"1":[105,150,205],
+  "3":[120,165,110],"7":[72,60,134],"8":[236,213,177],
+  "2":[211,111,49],"5":[34,113,33],"0":[132,105,50],
+  "9":[203,196,193],"?":[100,64,51],"_":[55,68,66]
+ };
+ const first=[["?","?","?","10"],["?","?","?","6"],["?","?","?","1"],
+   ["?","?","?","3"],["?","?","?","7"],["?","?","?","8"]];
+ const second=[["?","?","?","9"],["?","?","?","2"],["?","?","?","0"],
+   ["_","_","_","_"],["_","_","_","_"]];
+ function paint(row,top,xs){
+  for(let i=0;i<row.length;i++){
+   const x=xs[i];
+   for(let j=0;j<4;j++)
+    rect(x-14,top+34*j,x+14,top+34*j+33,sample[row[i][j]]);
+   rect(x-16,top-2,x-15,top+136,[178,185,180]);
+   rect(x+15,top-2,x+16,top+136,[178,185,180]);
+  }
+ }
+ paint(first,182,[50,100,150,200,250,300]);
+ paint(second,382,[75,125,175,225,275]);
+ const env={};vm.runInNewContext(scanner,env);
+ const canvas={getContext:()=>({getImageData:()=>({data:pixels})})};
+ const found=env.autoRecognizeGame(canvas);
+ assert.equal(found.valid,true,"Five-bottom screenshot must be accepted: "+found.reason);
+ assert.equal(found.count,11,"Must retain all five lower tubes, including two empties");
+ assert.equal(found.filled,9,"Nine actual occupied tubes");
+ assert.equal(found.hidden,27,"Three masked pieces per occupied tube");
+ assert.equal(found.state[5][3],"8","Beige top must not be hidden");
+ assert.equal(found.state[6][3],"9","Gray top must stay gray");
+ assert.equal(found.state[9].length,0);
+ assert.equal(found.state[10].length,0);
+}
 function testPreferShorterSource(){
  // Both red crosses are on top. Pour 9 -> 8 instead of 8 -> 9:
  // the former leaves only one unknown piece in tube 9.
@@ -189,7 +244,7 @@ async function testJournal(){
  assert.equal(runs[0].events.length,2);
 }
 async function main(){
- testBasics();testScannerColors();testScannerDynamicRows();testPreferShorterSource();testFinishPurpleBeforeBlue();testHeartColorSamples();testStablePalette();await testJournal();
+ testBasics();testScannerColors();testScannerDynamicRows();testFiveBottomTubes();testPreferShorterSource();testFinishPurpleBeforeBlue();testHeartColorSamples();testStablePalette();await testJournal();
  const matrix=[{colors:3,seeds:12},{colors:4,seeds:20},{colors:8,seeds:10},{colors:10,seeds:6,start:11}];
  const summary=[];
  for(const item of matrix){
