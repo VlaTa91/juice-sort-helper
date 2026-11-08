@@ -43,6 +43,14 @@ const remaining=new Map(types.map(c=>[c,cap-(counts.get(c)||0)])),bag=[];
 for(const [c,n]of remaining)for(let j=0;j<n;j++)bag.push(c);
 if(bag.length!==hidden)return null;
 return {types,remaining:Object.fromEntries(remaining),unknown:hidden,filled,nColors,bag}}
+// A completed tube containing all four known pieces of one color is
+// irreversible progress. Do this before stochastic scoring, which otherwise
+// may prefer to fill an unrelated partially mixed tube.
+function guaranteedCompletion(s,m,cap){
+ const [i,j,n]=m,from=s[i],to=s[j],color=from.at(-1);
+ if(!to.length||!to.every(v=>v===color)||to.length+n!==cap)return false;
+ return s.reduce((count,t)=>count+t.filter(v=>v===color).length,0)===cap;
+}
 function sample(s,bag,rng){const b=bag.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[b[i],b[j]]=[b[j],b[i]]}let k=0;return s.map(t=>t.map(x=>x==="?"?b[k++]:x))}
 function after(obs,world,m){const nw=move(world,m),no=move(obs,m),i=m[0];let reveal=null;
 if(no[i].at(-1)==="?"){reveal=nw[i].at(-1);no[i][no[i].length-1]=reveal}
@@ -85,6 +93,14 @@ const available=spare===1&&merges.length?merges:compact;
 if(!available.length)return {move:null,reason:"no-legal"};
 const distribution=deck(s,cap,options.palette||[]);
 if(!distribution)return {move:null,reason:"invalid-counts"};
+const completed=available.filter(m=>guaranteedCompletion(s,m,cap));
+if(completed.length){
+ completed.sort((a,b)=>{
+  const reveal=m=>s[m[0]].length>m[2]&&s[m[0]][s[m[0]].length-m[2]-1]==="?";
+  return Number(reveal(b))-Number(reveal(a));
+ });
+ return {move:completed[0],reason:"guaranteed-completion",distribution,simulations:0};
+}
 if(!distribution.unknown){const sorted=available.map(m=>({m,score:moveScore(s,m,cap)})).sort((a,b)=>b.score-a.score);
 return {move:sorted[0].m,reason:"visible-only",distribution,simulations:0}}
 const maxDepth=Math.max(6,Math.min(34,options.depth||22));
@@ -123,5 +139,5 @@ return {move:ranked[0]?.move||null,reason:"belief-mcts",distribution:{
 types:distribution.types,remaining:distribution.remaining,unknown:distribution.unknown,nColors:distribution.nColors},
 simulations,candidates:ranked,nodes:nodes.size}
 }
-g.JuicePlanner={choose,legal,move,after,deck,sample,solved,rngSeed,preferCompactMoves};
+g.JuicePlanner={choose,legal,move,after,deck,sample,solved,rngSeed,preferCompactMoves,guaranteedCompletion};
 })(typeof window!=="undefined"?window:globalThis);
