@@ -68,4 +68,36 @@ const beforeCorrection=M2.snapshot();
 M2.edit(0,1,"3");
 assert.equal(M2.restore(beforeCorrection),true);
 assert.equal(M2.knownCount(),0,"Undoing an edit must reverse a mistaken color");
+// Manual repair after a missed or extra tube must preserve original tokens.
+const repair=device(new Map());
+repair.begin([["?","?","?","1"],["?","?","?","2"],[],[]],true);
+repair.move([0,2,1]);repair.edit(0,2,"3");
+assert.equal(repair.knownCount(),1);
+const beforeInsert=repair.snapshot();
+assert.equal(repair.insertTube(1,["?","?","?","?"]),true);
+assert.equal(repair.info().tubes,5);
+assert.equal(repair.edit(1,3,"8"),true);
+assert.equal(repair.restart()[1][3],"8");
+assert.equal(repair.restart()[0][2],"3","Adding tube cannot erase an earlier discovery");
+assert.equal(repair.restart()[2][3],"2","Original tube following insertion moves to new index");
+assert.equal(repair.removeTube(1),true,"Repair tube can be removed before pours");
+assert.equal(repair.info().tubes,4);
+assert.equal(repair.restart()[0][2],"3","Removing extra tube must retain known layers");
+assert.equal(repair.restore(beforeInsert),true,"Undo structure change restores original topology");
+assert.equal(repair.info().tubes,4);
+
+// Fill an initially empty tube by choosing its bottom layer, then reset it.
+repair.begin([["?","?","?","1"],["?","?","?","2"],[],[]],true);
+assert.equal(repair.insertTube(2,[]),true);
+assert.equal(repair.edit(2,0,"8"),true);
+assert.equal(repair.restart()[2][0],"8","Manual painting empty bottom slot persists");
+assert.equal(repair.edit(2,0,"?"),true);
+assert.equal(repair.restart()[2][0],"?","Correcting a false color to ? clears knowledge");
+assert.equal(repair.edit(2,0,"×",true),true);
+assert.equal(repair.restart()[2].length,0,"Deleting the top manually added layer works");
+assert.equal(repair.removeTube(2),true);
+assert.equal(repair.info().tubes,4);
+repair.begin([["?","?","?","1"],[],[]],true);
+repair.move([0,1,1]);
+assert.equal(repair.removeTube(0),false,"A tube with pieces moved elsewhere cannot be removed");
 console.log("Level replay memory tests passed");
