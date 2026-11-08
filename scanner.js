@@ -55,6 +55,13 @@ function autoRecognizeGame(canvas){
  function classify([r,g,b]){
   // Saturated pink must not be mistaken for a gray dash (tube 7 regression).
   if(r>=170&&r-g>30&&b-g>24&&b>r-65)return '6';
+  // Distinguish dark emerald heart tiles from pale-green triangles
+  // using their tile backgrounds, not the white glyph or glass border.
+  // Regression: level 5, tubes 4 and 6 contain hearts, NOT triangles.
+  if(g>r+20&&g>b+15){
+   if(g>=144&&(r>=94||b>=88))return '3';
+   if(g<151&&r<97&&b<90)return '5';
+  }
   if(g>=r+3&&Math.abs(g-b)<19&&r+g+b<345)return '_';
   // Empty glass is neutral dark green, not a hidden brown layer.
   if(Math.max(r,g,b)<=110&&Math.abs(r-g)<22&&Math.abs(g-b)<24&&(b>=r-6||g>=r-1))return '_';
