@@ -141,16 +141,16 @@ function testFinishPurpleBeforeBlue(){
 }
 function testHeartColorSamples(){
  const scanner=fs.readFileSync(path.join(root,"scanner.js"),"utf8");
- const match=scanner.match(/function classify\\(\\[r,g,b\\]\\)\\{([\\s\\S]*?)\\n \\}/);
+ const match=scanner.match(/function classify\(\[r,g,b\]\)\{([\s\S]*?)\n \}/);
  assert(match,"Classification function not found");
- const fn=Function("reference","return function classify([r,g,b]){"+match[1]+"\\n}")({
-   "3":[[134,165,127],[69,164,110]],
-   "5":[[75,116,69],[39,90,48],[33,101,32]]
+ const fn=Function("reference","return function classify([r,g,b]){"+match[1]+"\n}")({
+  "3":[[134,165,127],[69,164,110]],
+  "5":[[75,116,69],[39,90,48],[33,101,32]]
  });
- assert.equal(fn([12,103,14]),"5","Level 5 heart background should be dark green");
- assert.equal(fn([134,179,134]),"3","Bright white-heart highlight resembles pale green; scanner must use multi-height samples");
+ assert.equal(fn([12,103,14]),"5","Dark green heart tile was read incorrectly");
+ assert.equal(fn([134,179,134]),"3","Bright heart glyph looks like pale green");
  assert(scanner.includes("for(const offset of [-7,-3,3,7])"),
-  "The scanner must sample several locations inside a layer, not just white icon highlights");
+  "Scanner must sample tile edges above and below bright symbol overlays");
 }
 function testStablePalette(){
  const html=fs.readFileSync(path.join(root,"index.html"),"utf8");
