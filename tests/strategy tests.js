@@ -23,6 +23,16 @@ assert(P.strategicValue(example,blue,4)>P.strategicValue(example,orange,4),
  "At comparable reveal depth, prefer a group of three over a group of two");
 assert.equal(example.filter(t=>!t.length).length,1);
 assert(ms.some(m=>m[1]===9),"The last free tube must remain an eligible move");
+// Later-stage exploration: when merges have already been tried, exposing
+// the bottom hidden layer in tube 7 is preferable to opening another tall tube.
+const shallow=[
+ ["?","?","?","2"],["?","?","?","10"],["?","?","?","10"],
+ ["?","?","?","1"],["?","?","?","6"],["?","?","5"],
+ ["?","8"],["?","?","0","0"],["9","9","9"],[]
+];
+const exploratory=P.legal(shallow,4).filter(m=>!shallow[m[1]].length);
+assert.equal(P.systematicOpening(shallow,exploratory).join(","),"6,9,1",
+ "Reveal last hidden layer in tube 7 before opening another tall source");
 const entirelyKnown=[["1","1","1"],["1"],["2","2","2","2"],[]];
 const completion=P.choose(entirelyKnown,{capacity:4});
 assert.equal(completion.reason,"guaranteed-completion");
