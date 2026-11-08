@@ -160,6 +160,10 @@ function testStablePalette(){
   "Opening the palette must not trigger auto-scrolling");
  assert(html.includes("Reserve the palette area on every render"),
   "Board should always reserve space for the palette");
+ assert(html.includes("window.resizeTo(size.width,size.height)"),
+  "Desktop PWA needs a size-to-BlueStacks action");
+ assert(html.includes("width:554,height:958"),
+  "Keep the compact desktop window dimensions near BlueStacks");
 }
 
 async function testJournal(){
