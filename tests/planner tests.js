@@ -52,6 +52,55 @@ function testScannerColors(){
  assert.equal(classify([229,169,212]),"6","Pink top token misidentified");
  assert.equal(classify([154,159,160]),"9","Gray dash misidentified");
 }
+function testScannerDynamicRows(){
+ // Regression for the user screenshot: 12 tubes, 10 occupied and 2 empty,
+ // several previously uncovered layers in the first row.
+ const source=fs.readFileSync(path.join(root,"scanner.js"),"utf8");
+ const width=351,height=768,pixels=new Uint8ClampedArray(width*height*4);
+ function rect(x0,y0,x1,y1,rgb){
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+   if(x<0||x>=width||y<0||y>=height)continue;
+   const off=(y*width+x)*4;
+   pixels[off]=rgb[0];pixels[off+1]=rgb[1];pixels[off+2]=rgb[2];pixels[off+3]=255;
+  }
+ }
+ rect(0,0,width-1,height-1,[28,47,43]);
+ const sample={
+  "10":[184,80,80],"6":[241,167,228],"1":[105,150,205],
+  "3":[120,165,110],"7":[72,60,134],"8":[220,180,120],
+  "2":[211,111,49],"5":[34,113,33],"0":[132,105,50],
+  "9":[154,154,152],"?":[90,53,39],"_":[55,68,66]
+ };
+ const first=[
+  ["10","6","?","?"],["10","3","7","?"],["1","8","?","?"],
+  ["6","2","?","?"],["7","3","8","?"],["7","6","5","8"]
+ ];
+ const second=[
+  ["5","6","2","0"],["5","3","9","?"],["0","10","?","?"],
+  ["1","2","9","?"],["_","_","_","_"],["_","_","_","_"]
+ ];
+ for(const [row,top] of [[first,182],[second,382]]){
+  for(let i=0;i<6;i++){
+   const x=50+50*i;
+   for(let j=0;j<4;j++)rect(x-14,top+34*j,x+14,top+34*j+33,sample[row[i][j]]);
+   rect(x-16,top-2,x-15,top+136,[178,185,180]);
+   rect(x+15,top-2,x+16,top+136,[178,185,180]);
+  }
+ }
+ const env={};vm.runInNewContext(source,env);
+ const canvas={getContext:()=>({getImageData:()=>({data:pixels})})};
+ const result=env.autoRecognizeGame(canvas);
+ assert.equal(result.count,12,"Scanner discarded lower empty tubes");
+ assert.equal(result.valid,true,"Scanner should recognize complete known tokens: "+result.reason);
+ assert.equal(result.filled,10,"Scanner should preserve 10 occupied tubes");
+ assert.equal(result.hidden,12,"Scanner must not re-hide the already discovered pieces");
+ assert.equal(result.state[0].join(","),["?","?","6","10"].join(","));
+ assert.equal(result.state[6].join(","),["0","2","6","5"].join(","));
+ assert.equal(result.state[9].join(","),["?","9","2","1"].join(","));
+ assert.equal(result.state[10].length,0);
+ assert.equal(result.state[11].length,0);
+}
+
 async function testJournal(){
  const memory=new Map(),storage={
   getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v)};
@@ -67,7 +116,7 @@ async function testJournal(){
  assert.equal(runs[0].events.length,2);
 }
 async function main(){
- testBasics();testScannerColors();await testJournal();
+ testBasics();testScannerColors();testScannerDynamicRows();await testJournal();
  const matrix=[{colors:3,seeds:12},{colors:4,seeds:20},{colors:8,seeds:10},{colors:10,seeds:6,start:11}];
  const summary=[];
  for(const item of matrix){
