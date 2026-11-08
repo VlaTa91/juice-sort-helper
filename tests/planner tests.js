@@ -147,6 +147,7 @@ function testFiveBottomTubes(){
  const env={};vm.runInNewContext(scanner,env);
  const canvas={getContext:()=>({getImageData:()=>({data:pixels})})};
  const found=env.autoRecognizeGame(canvas);
+ console.log("Five-bottom scanner diagnostic",JSON.stringify({count:found.count,filled:found.filled,hidden:found.hidden,valid:found.valid,reason:found.reason,state:found.state}));
  assert.equal(found.valid,true,"Five-bottom screenshot must be accepted: "+found.reason);
  assert.equal(found.count,11,"Must retain all five lower tubes, including two empties");
  assert.equal(found.filled,9,"Nine actual occupied tubes");
