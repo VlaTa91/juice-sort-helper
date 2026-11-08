@@ -916,7 +916,7 @@ function tubeEditStatus(message){
 }
 $('tubeToolsToggle').onclick=()=>{
  const opened=$('tubeTools').hidden;
- if(opened){refreshTubeEditor();closePalette();}
+ if(opened){refreshTubeEditor();closePalette();if($('scanError'))$('scanError').hidden=true;}
  $('tubeTools').hidden=!opened;
  $('tubeToolsToggle').setAttribute('aria-expanded',String(opened));
 };
