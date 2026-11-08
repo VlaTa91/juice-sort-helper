@@ -15,6 +15,22 @@ if(!b.length){if(firstEmpty===-1)firstEmpty=j;if(j!==firstEmpty)continue;}
 const amt=Math.min(run,cap-b.length);if(amt>0)out.push([i,j,amt]);
 }}return out}
 function move(s,m){const t=copy(s),[a,b,n]=m;for(let k=0;k<n;k++)t[b].push(t[a].pop());return t}
+// Two actions are equivalent if they produce the same collection of visible
+// tubes up to renumbering. Since unknowns are exchangeable until observed,
+// Monte Carlo noise must not choose a higher-numbered source in this case.
+// Only remove genuinely equivalent states: a different known layer underneath
+// remains a distinct branch with potentially different consequences.
+function equivalentResultKey(s,m){
+ return move(s,m).map(t=>t.join(",")).sort().join("|");
+}
+function preferLowerSource(s,moves){
+ const unique=new Map();
+ for(const m of moves){
+  const k=equivalentResultKey(s,m),prior=unique.get(k);
+  if(!prior||m[0]<prior[0]||(m[0]===prior[0]&&m[1]<prior[1]))unique.set(k,m);
+ }
+ return [...unique.values()].sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+}
 // When reciprocal pours reveal equally unknown layers, moving from the
 // shorter tube into the longer one reduces stranded pieces and frees space
 // earlier. Keep the alternative when it provides different information.
@@ -112,7 +128,7 @@ return (initialUnknown-unknown(obs))*4.7+complete*9+empties*2.2+Math.min(6,diver
 function rollout(obs,world,rng,depth,maxDepth,initialUnknown,cap){
 const seen=new Set([key(obs)]);let turn=depth;
 while(turn<maxDepth){if(solved(obs,cap))break;
-const moves=legal(obs,cap);if(!moves.length)break;
+const moves=preferLowerSource(obs,legal(obs,cap));if(!moves.length)break;
 const choices=moves.map(m=>({m,v:moveScore(obs,m,cap)+rng()*9})).sort((a,b)=>b.v-a.v);
 let best=null;for(const c of choices){if(!seen.has(key(move(obs,c.m)))){best=c;break}}
 if(!best)break;
@@ -124,8 +140,9 @@ const visited=new Set((options.visited||[]).map(v=>{
 try{return typeof v==="string"&&v.startsWith("[")?key(JSON.parse(v)):v}catch(e){return v}}));
 const allMoves=legal(s,cap);
 const fresh=allMoves.filter(m=>!visited.has(key(move(s,m))));
-// Evaluate every unvisited legal move, including moves into the last empty tube.
-const available=fresh;
+// Keep every strategically distinct move; remove only symmetric duplicates.
+// If results are identical up to renumbering, use the lower source number.
+const available=preferLowerSource(s,fresh);
 if(!available.length)return {move:null,reason:"no-legal"};
 const distribution=deck(s,cap,options.palette||[]);
 if(!distribution)return {move:null,reason:"invalid-counts"};
@@ -145,7 +162,7 @@ const maxDepth=Math.max(6,Math.min(34,options.depth||22));
 const simulations=Math.max(40,Math.min(2000,options.simulations||340));
 const rng=rngSeed(options.seed??seedOf(s)),nodes=new Map(),rootKey=key(s),discount=.998;
 function getNode(obs){const k=key(obs);let node=nodes.get(k);
-if(!node){node={visits:0,actions:legal(obs,cap).map(m=>({m,n:0,q:0,dead:0,win:0,reveals:0}))};nodes.set(k,node)}return node}
+if(!node){node={visits:0,actions:preferLowerSource(obs,legal(obs,cap)).map(m=>({m,n:0,q:0,dead:0,win:0,reveals:0}))};nodes.set(k,node)}return node}
 const root=getNode(s);root.actions=root.actions.filter(a=>available.some(m=>m.join()===a.m.join()));
 for(let k=0;k<simulations;k++){
 const world0=sample(s,distribution.bag,rng);
@@ -180,5 +197,5 @@ return {move:ranked[0]?.move||null,reason:"belief-mcts",distribution:{
 types:distribution.types,remaining:distribution.remaining,unknown:distribution.unknown,nColors:distribution.nColors},
 simulations,candidates:ranked,nodes:nodes.size}
 }
-g.JuicePlanner={choose,legal,move,after,deck,sample,solved,rngSeed,preferCompactMoves,guaranteedCompletion,strategicValue,systematicOpening};
+g.JuicePlanner={choose,legal,move,after,deck,sample,solved,rngSeed,preferCompactMoves,guaranteedCompletion,strategicValue,systematicOpening,preferLowerSource,equivalentResultKey};
 })(typeof window!=="undefined"?window:globalThis);
