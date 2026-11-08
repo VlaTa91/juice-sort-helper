@@ -204,11 +204,18 @@ function autoRecognizeGame(canvas){
   if(Object.values(counts).some(n=>n!==4))bad++;
  }
  const unknownTop=state.filter(t=>t.length&&t.at(-1)==='?').length;
- let mismatch=0;
- if(hidden===0&&chosen.n===3){
-   const counts={};state.flat().forEach(t=>counts[t]=(counts[t]||0)+1);
-   mismatch=Object.values(counts).some(c=>c!==4)?1:0;
- }
+ // A tube puzzle has exactly four pieces of each color. This is valid at
+ // every stage, even when there are hidden colors or more than three lower
+ // tubes. The previous check ran only for one geometry and accepted boards
+ // with six orange or seven gray tiles as if they were correct.
+ const counts={};
+ for(const token of state.flat())if(token!=="?"&&token!=="X")
+   counts[token]=(counts[token]||0)+1;
+ const impossibleCounts=Object.values(counts).some(n=>n>4);
+ const totalPieces=state.reduce((n,t)=>n+t.length,0);
+ const fullyKnownInvalid=hidden===0&&(
+   totalPieces%4!==0||Object.values(counts).some(n=>n!==4));
+ const mismatch=(impossibleCounts||fullyKnownInvalid)?1:0;
  const valid=bad===0&&unknownTop===0&&mismatch===0&&filled>=2&&visible>0;
  return {valid,state,count:xs.length,bottomCount:chosen.n,visible,hidden,filled,unknownTop,bad,
   layoutScore:chosen.score,
@@ -291,7 +298,8 @@ function autoRecognizeGame(canvas){
    for(const token of actual)knownCounts[token]=(knownCounts[token]||0)+1;
    const plausible=total%4===0&&total>=8&&
     Object.keys(knownCounts).length<=total/4&&
-    Object.values(knownCounts).every(n=>n<=4);
+    Object.values(knownCounts).every(n=>n<=4)&&
+    (found.hidden>0||Object.values(knownCounts).every(n=>n===4));
    if(found.valid&&plausible){
      // Initial masked boards normally include exactly two empty working tubes.
      // Never discard those just because the three occupied lower tubes have
