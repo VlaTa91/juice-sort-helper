@@ -64,7 +64,7 @@ function autoRecognizeGame(canvas){
   }
   // Prefer actual warm beige tile backgrounds (including shaded edges).
   // Hidden brown layers are darker, so a muted beige must not become '?'.
-  if(r>=128&&g>=105&&b>=77&&r>g+7&&g>b+17&&g-b<=51&&r-g<=75)return '8';
+  if(r>=128&&g>=105&&b>=77&&r>g+7&&g>b+17&&g-b<=65&&r-g<=75)return '8';
   if(g>=r+3&&Math.abs(g-b)<19&&r+g+b<345)return '_';
   // Empty glass is neutral dark green, not a hidden brown layer.
   if(Math.max(r,g,b)<=110&&Math.abs(r-g)<22&&Math.abs(g-b)<24&&(b>=r-6||g>=r-1))return '_';
