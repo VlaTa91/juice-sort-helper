@@ -42,10 +42,10 @@ if(!b.length&&s.filter(t=>!t.length).length===1)score-=30;
 return score}
 function evaluate(obs,initialUnknown,cap,steps){if(solved(obs,cap))return 100-steps*.4;
 const moves=legal(obs,cap);if(!moves.length)return -95;
-let complete=0,runs=0;for(const t of obs){if(t.length===cap&&t.every(x=>x===t[0]))complete++;
+let complete=0,runs=0;for(const t of obs){if(t.length===cap&&t[0]!=="?"&&t.every(x=>x===t[0]))complete++;
 for(let i=0;i<t.length;i++)if(i===0||t[i]!==t[i-1])runs++}
 const empties=obs.filter(t=>!t.length).length,diversity=new Set(moves.map(m=>m[0])).size;
-return (initialUnknown-unknown(obs))*4.7+complete*9+empties*2.2+Math.min(6,diversity)*1.1-runs*.3-steps*.32}
+return Math.max(-40,Math.min(40,(initialUnknown-unknown(obs))*1.2+complete*3+empties*2.2+Math.min(6,diversity)*1.1-runs*.3-steps*.32))}
 function rollout(obs,world,rng,depth,maxDepth,initialUnknown,cap){
 const seen=new Set([key(obs)]);let turn=depth;
 while(turn<maxDepth){if(solved(obs,cap))break;
@@ -54,15 +54,16 @@ const choices=moves.map(m=>({m,v:moveScore(obs,m,cap)+rng()*9})).sort((a,b)=>b.v
 let best=null;for(const c of choices){if(!seen.has(key(move(obs,c.m)))){best=c;break}}
 if(!best)break;
 const step=after(obs,world,best.m);obs=step.obs;world=step.world;seen.add(key(obs));turn++;
-}return evaluate(obs,initialUnknown,cap,turn)}
+}return {reward:evaluate(obs,initialUnknown,cap,turn),outcome:solved(obs,cap)?"won":!legal(obs,cap).length?"blocked":"unresolved"}}
+let retained=null;
 function choose(s,options={}){
 const cap=options.capacity||4;
+if(!Array.isArray(s)||s.some(t=>!Array.isArray(t)||t.length>cap||t.some(v=>v==="X"||v===undefined||v===null)))return {move:null,reason:"uncertain-input"};
 const visited=new Set((options.visited||[]).map(v=>{
 try{return typeof v==="string"&&v.startsWith("[")?key(JSON.parse(v)):v}catch(e){return v}}));
 const allMoves=legal(s,cap);
 const fresh=allMoves.filter(m=>!visited.has(key(move(s,m))));
-const spare=s.filter(t=>!t.length).length,merges=fresh.filter(m=>s[m[1]].length>0);
-const available=spare===1&&merges.length?merges:fresh;
+const available=fresh.length?fresh:allMoves;
 if(!available.length)return {move:null,reason:"no-legal"};
 const distribution=deck(s,cap,options.palette||[]);
 if(!distribution)return {move:null,reason:"invalid-counts"};
@@ -70,20 +71,23 @@ if(!distribution.unknown){const sorted=available.map(m=>({m,score:moveScore(s,m,
 return {move:sorted[0].m,reason:"visible-only",distribution,simulations:0}}
 const maxDepth=Math.max(6,Math.min(34,options.depth||22));
 const simulations=Math.max(40,Math.min(2000,options.simulations||340));
-const rng=rngSeed(options.seed??seedOf(s)),nodes=new Map(),rootKey=key(s),discount=.998;
+const signature=JSON.stringify([cap,distribution.remaining,options.depth||22]);
+if(!retained||retained.signature!==signature||retained.nodes.size>12000)retained={signature,nodes:new Map(),round:0};
+const rng=rngSeed(options.seed??(seedOf(s)+retained.round++)),nodes=retained.nodes,rootKey=key(s),discount=.998;
 function getNode(obs){const k=key(obs);let node=nodes.get(k);
 if(!node){node={visits:0,actions:legal(obs,cap).map(m=>({m,n:0,q:0,dead:0,win:0,reveals:0}))};nodes.set(k,node)}return node}
-const root=getNode(s);root.actions=root.actions.filter(a=>available.some(m=>m.join()===a.m.join()));
+const root=getNode(s);const allowed=root.actions.filter(a=>available.some(m=>m.join()===a.m.join()));
 for(let k=0;k<simulations;k++){
 const world0=sample(s,distribution.bag,rng);
 let obs=copy(s),world=world0,trail=[],seen=new Set([rootKey]),depth=0;
 while(depth<maxDepth){if(solved(obs,cap))break;
 const node=getNode(obs);if(!node.actions.length)break;
 let action=null;
-const untried=node.actions.filter(a=>a.n===0);
+const actions=depth===0?allowed:node.actions;
+const untried=actions.filter(a=>a.n===0);
 if(untried.length){untried.sort((a,b)=>moveScore(obs,b.m,cap)-moveScore(obs,a.m,cap));
 action=untried[Math.floor(Math.pow(rng(),2)*Math.min(untried.length,3))]}
-else{let best=-Infinity;for(const a of node.actions){
+else{let best=-Infinity;for(const a of actions){
 const optimism=a.q/a.n+48*Math.sqrt(Math.log(1+node.visits)/a.n)+moveScore(obs,a.m,cap)*.35;
 if(optimism>best){best=optimism;action=a}}}
 const step=after(obs,world,action.m);
@@ -92,14 +96,14 @@ obs=step.obs;world=step.world;depth++;
 const stateKey=key(obs);if(seen.has(stateKey))break;seen.add(stateKey);
 if(action.n===0)break;
 }
-let reward=rollout(obs,world,rng,depth,maxDepth,distribution.unknown,cap);
-if(depth<maxDepth&&solved(obs,cap))reward=100-depth*.4;
+const result=rollout(obs,world,rng,depth,maxDepth,distribution.unknown,cap);
+let reward=result.reward;
 for(const e of trail){e.node.visits++;e.action.n++;e.action.q+=reward*Math.pow(discount,depth);
-if(reward<=-90)e.action.dead++;if(reward>=80)e.action.win++;if(e.revealed)e.action.reveals++}
+if(result.outcome==="blocked")e.action.dead++;if(result.outcome==="won")e.action.win++;if(e.revealed)e.action.reveals++}
 }
-const ranked=root.actions.filter(a=>a.n>0).map(a=>({move:a.m,visits:a.n,value:a.q/a.n,
-deadRate:a.dead/a.n,winRate:a.win/a.n,immediateRevealRate:a.reveals/a.n}))
-.sort((a,b)=>(b.value-80*b.deadRate)-(a.value-80*a.deadRate));
+const ranked=allowed.filter(a=>a.n>0).map(a=>({move:a.m,visits:a.n,value:a.q/a.n,
+deadRate:a.dead/a.n,winRate:a.win/a.n,unresolvedRate:(a.n-a.dead-a.win)/a.n,immediateRevealRate:a.reveals/a.n}))
+.sort((a,b)=>(b.winRate*100-b.deadRate*120+b.value*.1)-(a.winRate*100-a.deadRate*120+a.value*.1));
 return {move:ranked[0]?.move||null,reason:"belief-mcts",distribution:{
 types:distribution.types,remaining:distribution.remaining,unknown:distribution.unknown,nColors:distribution.nColors},
 simulations,candidates:ranked,nodes:nodes.size}

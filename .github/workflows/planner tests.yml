@@ -12,6 +12,7 @@ on:
   workflow_dispatch:
 jobs:
   planner:
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[без проверок]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

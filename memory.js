@@ -21,15 +21,29 @@ function begin(s,forceNew=false){
  save();return {board:clone(original()),reused,learned:knownCount()}
 }
 function attach(s){
- return !!level&&s.length===level.positions.length&&s.every((t,i)=>t.length===level.positions[i].length&&t.every((v,j)=>!real(level.learned[level.positions[i][j]])||v===level.learned[level.positions[i][j]]))
+ if(!level||s.length!==level.positions.length)return false;
+ const used=new Set();
+ return s.every((t,i)=>t.length===level.positions[i].length&&t.every((v,j)=>{
+  const token=level.positions[i][j];if(typeof token!=="string"||used.has(token))return false;used.add(token);
+  const [a,b]=token.split(":").map(Number),original=level.original[a]?.[b];
+  if(original===undefined)return false;
+  const expected=real(level.learned[token])?level.learned[token]:original;
+  return !real(expected)||v===expected;
+ }))
+}
+function snapshot(){return clone(level)}
+function restore(saved){
+ const previous=level;level=clone(saved);
+ if(!level||!Array.isArray(level.original)||!Array.isArray(level.positions)||!level.learned){level=previous;return false}
+ save();return true
 }
 function edit(i,j,value,removed=false){
  if(!level||!level.positions[i])return false;
- if(removed){if(j===level.positions[i].length-1)level.positions[i].pop();save();return true}
+ if(removed)return false; // Structural correction requires a new consistent baseline
  const token=level.positions[i][j];if(!token)return false;
  const [ti,sj]=token.split(":").map(Number);
- if(level.original[ti][sj]==="?"){if(real(value))level.learned[token]=String(value);else delete level.learned[token]}
- else if(real(value)&&value!==level.original[ti][sj])level.original[ti][sj]=String(value);
+ if(level.original[ti][sj]==="?"||level.original[ti][sj]==="X"){if(real(value))level.learned[token]=String(value);else delete level.learned[token]}
+ else if(value==="?"||value==="X"||real(value))level.original[ti][sj]=String(value);
  save();return true
 }
 function move(m){
@@ -42,5 +56,5 @@ function decorate(s){return !level?clone(s):s.map((t,i)=>t.map((v,j)=>v==="?"&&r
 function restart(){if(!level)return null;level.positions=identity(level.original);level.moves=0;save();return clone(original())}
 const hasLevel=()=>!!level&&level.original.some(t=>t.length);
 const info=()=>level?{known:knownCount(),moves:level.moves,tubes:level.original.length}:null;
-root.JuiceMemory={begin,attach,edit,move,decorate,restart,knownCount,hasLevel,info};
+root.JuiceMemory={begin,attach,edit,move,decorate,restart,knownCount,hasLevel,info,snapshot,restore};
 })(typeof window!=="undefined"?window:globalThis);
