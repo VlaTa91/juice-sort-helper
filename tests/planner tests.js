@@ -166,6 +166,9 @@ function testStablePalette(){
   "Keep the compact desktop window dimensions near BlueStacks");
  assert(html.includes("analysis.reason==='guaranteed-completion'"),
   "Guaranteed completion needs an explanation in the PWA");
+ assert(html.includes("body>#palette .palette-close"),"The palette close control should be positioned in the top-right");
+ assert(html.includes("JuiceMemory.restore(entry.memory"),"Undo must restore token identity memory");
+ assert(html.includes("history=Array.isArray(old.history)?old.history.filter"),"Old unsafe undo snapshots must not be replayed");
  assert(html.includes("reasonNode.id='moveReason'"),
   "The app should display the purpose of each suggestion");
 }
