@@ -238,6 +238,15 @@ body>#board .layer .drop-symbol{width:min(70%,28px);height:72%}
 #quickActions #quickRestart{box-sizing:border-box;display:flex;flex-direction:column;gap:0;align-items:center;justify-content:center;width:54px;min-width:54px;min-height:49px;padding:3px;font-size:25px;background:#3b5141;border:1px solid #819d83;border-radius:12px;color:#fff}
 #quickActions #quickRestart[hidden]{display:none!important}
 #quickActions:has(#quickRestart:not([hidden])) #uploadBottom,#quickActions:has(#quickRestart:not([hidden])) #quickHint{width:calc((100% - 82px)/2)}
+/* Expose the purpose of a recommended move above the stationary board. */
+body>#moveReason{position:fixed!important;z-index:35;left:50%;
+ top:calc((100dvh - 165px - min(440px,calc(100dvh - 365px)))/2 - 44px);
+ transform:translateX(-50%);width:max-content;max-width:min(94vw,520px);
+ box-sizing:border-box;padding:7px 10px;border-radius:9px;
+ color:#e6f4e9;background:#20382e;border:1px solid #617b6b;
+ text-align:center;font:600 12px/1.25 system-ui;pointer-events:none}
+body>#moveReason[hidden]{display:none!important}
+@media(max-height:620px){body>#moveReason{top:7px}}
 /* Desktop PWA can be sized to sit beside BlueStacks without filling the screen. */
 #matchBlueStacks{
  position:fixed;top:38px;right:9px;z-index:1100;
@@ -338,6 +347,7 @@ function solve(s){
 }
 function hint(){
  pending=null;plannedMoves=[];
+ const reason=$('moveReason');if(reason){reason.hidden=true;reason.textContent=''}
  const total=state.reduce((n,t)=>n+t.length,0);
  if(!total){render();msg('Поле пустое. Загрузи скриншот.');return}
  if(state.some(t=>t.length>cap())){msg('Ошибка: одна из колбочек переполнена. Исправь поле.');render();return}
@@ -355,6 +365,10 @@ function hint(){
      return;
    }
    pending=analysis.move;plannedMoves=[];save();
+   if(reason){reason.textContent=analysis.reason==='guaranteed-completion'
+     ?'№'+(pending[0]+1)+' → №'+(pending[1]+1)+': собрать все 4 одинаковых символа'
+     :'№'+(pending[0]+1)+' → №'+(pending[1]+1)+': вероятностная подсказка, без гарантии';
+     reason.hidden=false}
    const remain=Object.entries(analysis.distribution.remaining||{})
      .sort((a,b)=>b[1]-a[1]).map(([v,n])=>(names[Number(v)]||'Ещё не открытый цвет')+': '+n).join('; ');
    msg('Из №'+(pending[0]+1)+' → в №'+(pending[1]+1)+', '+pending[2]+' фиш. Оценка с учётом '+analysis.simulations+' сценариев. Осталось: '+remain+'. После открытия ? укажи символ.');
@@ -362,7 +376,7 @@ function hint(){
  }
  const path=solve(state);
  if(!path||!path.length){render();msg('Для текущего положения не найдено решение. Проверь введённые символы; переливание без подсказки может привести к тупику.');showUndo();return}
- plannedMoves=path.slice(1);pending=path[0];save();msg('1 · ВЗЯТЬ из №'+(pending[0]+1)+' → 2 · СЮДА, в №'+(pending[1]+1)+'. '+pending[2]+' шт. После переливания нажми «Перелила → дальше».');render();
+ plannedMoves=path.slice(1);pending=path[0];save();if(reason){reason.textContent='Ход рассчитан по полностью открытому полю';reason.hidden=false}msg('1 · ВЗЯТЬ из №'+(pending[0]+1)+' → 2 · СЮДА, в №'+(pending[1]+1)+'. '+pending[2]+' шт. После переливания нажми «Перелила → дальше».');render();
 }
 // Screenshot recognition: local browser canvas, no server calls. Reference patches are extracted from user-supplied screenshots.
 let shotImage=null,calibrationMode=null,calibrationPoints=[];
@@ -745,7 +759,7 @@ $('confirmScan').onclick=()=>{if(!state.length)return;if(unknownTop(state)){msg(
  if($('palette').classList.contains('editing')){closePalette();return}
  if(editingTarget&&unknownTop(state)){$('palette').classList.add('editing');return}
  if(pending){$('apply').click()}else hint()
-}catch(e){msg('Ошибка подсказки: '+e.message)}};$('manualMode').onclick=()=>{playMode=false;selectedTube=null;$('mode').textContent='Режим: ввод цветов';msg('Ручное исправление: выбери цвет или ? в палитре и коснись слоя. Скриншот не нужен.');render();};$('stepDone').onclick=()=>$('apply').click();$('stepSkip').onclick=hint;$('hint').onclick=()=>{hint();(pending?$('stepPanel'):$('message')).scrollIntoView({behavior:'smooth',block:'center'})};$('apply').onclick=()=>{if(!pending){hint();return}if(!legal(state).some(m=>m.join(',')===pending.join(','))){pending=null;plannedMoves=[];render();save();msg('Ход устарел: пересчитываю.');hint();return}const completedMove=pending.slice();snapshot();JuiceMemory.move(pending);state=JuiceMemory.decorate(move(state,pending));JuiceJournal.record('move',{from:completedMove[0]+1,to:completedMove[1]+1,count:completedMove[2]},state);pending=null;if(unknownTop(state)){plannedMoves=[];render();save();hint();return}if(plannedMoves.length){const candidate=plannedMoves.shift();if(legal(state).some(m=>m.join(',')===candidate.join(','))){pending=candidate;render();save();return}plannedMoves=[]}save();hint()};$('undo').onclick=()=>{if(!history.length)return;state=JSON.parse(history.pop());pending=null;plannedMoves=[];render();save();msg('Последнее действие отменено.')};$('reset').onclick=()=>{if(confirm('Очистить уровень?'))init(Math.min(20,Math.max(3,Number($('count').value)||12)),Math.min(8,Math.max(2,cap()||4)))};try{let old=JSON.parse(localStorage.getItem('juice-state-manual-v8'));if(old?.state?.length){$('capacity').value=old.capacity||4;$('count').value=old.state.length;state=old.state.map(t=>t.map(v=>v==='4'?'0':v));history=Array.isArray(old.history)?old.history.map(h=>h.replace(/"4"/g,'"0"')):[];plannedMoves=Array.isArray(old.plannedMoves)?old.plannedMoves:[];pending=Array.isArray(old.pending)?old.pending:null;if(pending&&!legal(state).some(m=>m.join(',')===pending.join(','))){pending=null;plannedMoves=[]}if(!JuiceMemory.attach(state))JuiceMemory.begin(state,true);render();JuiceJournal.resume(state)}else if(JuiceMemory.hasLevel()){state=JuiceMemory.restart();$('capacity').value=4;$('count').value=state.length;history=[];pending=null;plannedMoves=[];render();save();JuiceJournal.resume(state)}else init()}catch{if(JuiceMemory.hasLevel()){state=JuiceMemory.restart();$('capacity').value=4;$('count').value=state.length;history=[];pending=null;plannedMoves=[];render();save();JuiceJournal.resume(state)}else init()}$('stepPlaceholder').replaceWith($('stepPanel'));document.body.append($('quickActions'));document.body.append($('board'));document.body.append($('palette'));const uploadLabel=$('uploadShot').closest('label');uploadLabel.id='uploadBottom';uploadLabel.firstChild.textContent='Выбрать файл';$('quickActions').prepend(uploadLabel);(function(){
+}catch(e){msg('Ошибка подсказки: '+e.message)}};$('manualMode').onclick=()=>{playMode=false;selectedTube=null;$('mode').textContent='Режим: ввод цветов';msg('Ручное исправление: выбери цвет или ? в палитре и коснись слоя. Скриншот не нужен.');render();};$('stepDone').onclick=()=>$('apply').click();$('stepSkip').onclick=hint;$('hint').onclick=()=>{hint();(pending?$('stepPanel'):$('message')).scrollIntoView({behavior:'smooth',block:'center'})};$('apply').onclick=()=>{if(!pending){hint();return}if(!legal(state).some(m=>m.join(',')===pending.join(','))){pending=null;plannedMoves=[];render();save();msg('Ход устарел: пересчитываю.');hint();return}const completedMove=pending.slice();snapshot();JuiceMemory.move(pending);state=JuiceMemory.decorate(move(state,pending));JuiceJournal.record('move',{from:completedMove[0]+1,to:completedMove[1]+1,count:completedMove[2]},state);pending=null;if(unknownTop(state)){plannedMoves=[];render();save();hint();return}if(plannedMoves.length){const candidate=plannedMoves.shift();if(legal(state).some(m=>m.join(',')===candidate.join(','))){pending=candidate;render();save();return}plannedMoves=[]}save();hint()};$('undo').onclick=()=>{if(!history.length)return;state=JSON.parse(history.pop());pending=null;plannedMoves=[];render();save();msg('Последнее действие отменено.')};$('reset').onclick=()=>{if(confirm('Очистить уровень?'))init(Math.min(20,Math.max(3,Number($('count').value)||12)),Math.min(8,Math.max(2,cap()||4)))};try{let old=JSON.parse(localStorage.getItem('juice-state-manual-v8'));if(old?.state?.length){$('capacity').value=old.capacity||4;$('count').value=old.state.length;state=old.state.map(t=>t.map(v=>v==='4'?'0':v));history=Array.isArray(old.history)?old.history.map(h=>h.replace(/"4"/g,'"0"')):[];plannedMoves=Array.isArray(old.plannedMoves)?old.plannedMoves:[];pending=Array.isArray(old.pending)?old.pending:null;if(pending&&!legal(state).some(m=>m.join(',')===pending.join(','))){pending=null;plannedMoves=[]}if(!JuiceMemory.attach(state))JuiceMemory.begin(state,true);render();JuiceJournal.resume(state)}else if(JuiceMemory.hasLevel()){state=JuiceMemory.restart();$('capacity').value=4;$('count').value=state.length;history=[];pending=null;plannedMoves=[];render();save();JuiceJournal.resume(state)}else init()}catch{if(JuiceMemory.hasLevel()){state=JuiceMemory.restart();$('capacity').value=4;$('count').value=state.length;history=[];pending=null;plannedMoves=[];render();save();JuiceJournal.resume(state)}else init()}$('stepPlaceholder').replaceWith($('stepPanel'));document.body.append($('quickActions'));document.body.append($('board'));document.body.append($('palette'));const reasonNode=document.createElement('div');reasonNode.id='moveReason';reasonNode.hidden=true;reasonNode.setAttribute('role','status');document.body.append(reasonNode);const uploadLabel=$('uploadShot').closest('label');uploadLabel.id='uploadBottom';uploadLabel.firstChild.textContent='Выбрать файл';$('quickActions').prepend(uploadLabel);(function(){
  const button=document.createElement('button');
  button.id='matchBlueStacks';
  button.type='button';
