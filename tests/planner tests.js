@@ -164,6 +164,10 @@ function testStablePalette(){
   "Desktop PWA needs a size-to-BlueStacks action");
  assert(html.includes("width:554,height:958"),
   "Keep the compact desktop window dimensions near BlueStacks");
+ assert(html.includes("analysis.reason==='guaranteed-completion'"),
+  "Guaranteed completion needs an explanation in the PWA");
+ assert(html.includes("reasonNode.id='moveReason'"),
+  "The app should display the purpose of each suggestion");
 }
 
 async function testJournal(){
