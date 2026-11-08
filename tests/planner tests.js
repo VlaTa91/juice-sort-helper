@@ -120,6 +120,38 @@ function testPreferShorterSource(){
  assert(chosen.move,"No move selected on a valid 9-color board");
  assert.notEqual(chosen.move.join(),"7,8,1","Planner selected inferior reverse direction");
 }
+function testFinishPurpleBeforeBlue(){
+ // Exact visible topology from level 5 after one purple token is moved:
+ // tube 4 has one exposed lightning with a hidden layer underneath;
+ // tube 11 has three lightning tokens and tube 10 has only two blue squares.
+ // The 4 -> 11 pour finishes a full known color and reveals a layer.
+ const b=[
+  ["?","?","?","6"],["?","?","2"],["?","?","?","6"],
+  ["?","7"],["?","?","5","5"],["?","?","?","5"],
+  ["?","?","0","0"],["?","8"],["?","?","10","10"],
+  ["1","1"],["7","7","7"]
+ ];
+ assert.equal(b.flat().length,36);
+ const forced=P.choose(b,{capacity:4,simulations:340,depth:28,seed:54321});
+ assert.equal(forced.reason,"guaranteed-completion");
+ assert.equal(forced.move.join(","),"3,10,1","Must fill purple tube 11 using tube 4, not pour blue");
+ const after=P.move(b,forced.move);
+ assert(after[10].every(x=>x==="7")&&after[10].length===4);
+ assert.equal(after[3].length,1,"Only the hidden layer remains in tube 4");
+}
+function testHeartColorSamples(){
+ const scanner=fs.readFileSync(path.join(root,"scanner.js"),"utf8");
+ const match=scanner.match(/function classify\\(\\[r,g,b\\]\\)\\{([\\s\\S]*?)\\n \\}/);
+ assert(match,"Classification function not found");
+ const fn=Function("reference","return function classify([r,g,b]){"+match[1]+"\\n}")({
+   "3":[[134,165,127],[69,164,110]],
+   "5":[[75,116,69],[39,90,48],[33,101,32]]
+ });
+ assert.equal(fn([12,103,14]),"5","Level 5 heart background should be dark green");
+ assert.equal(fn([134,179,134]),"3","Bright white-heart highlight resembles pale green; scanner must use multi-height samples");
+ assert(scanner.includes("for(const offset of [-7,-3,3,7])"),
+  "The scanner must sample several locations inside a layer, not just white icon highlights");
+}
 function testStablePalette(){
  const html=fs.readFileSync(path.join(root,"index.html"),"utf8");
  assert(!html.includes("body:has(>#palette.editing)>#board"),
@@ -145,7 +177,7 @@ async function testJournal(){
  assert.equal(runs[0].events.length,2);
 }
 async function main(){
- testBasics();testScannerColors();testScannerDynamicRows();testPreferShorterSource();testStablePalette();await testJournal();
+ testBasics();testScannerColors();testScannerDynamicRows();testPreferShorterSource();testFinishPurpleBeforeBlue();testHeartColorSamples();testStablePalette();await testJournal();
  const matrix=[{colors:3,seeds:12},{colors:4,seeds:20},{colors:8,seeds:10},{colors:10,seeds:6,start:11}];
  const summary=[];
  for(const item of matrix){
