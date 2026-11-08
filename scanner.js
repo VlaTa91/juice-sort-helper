@@ -48,8 +48,8 @@ function autoRecognizeGame(canvas){
   '5':[[75,116,69],[67,117,64],[39,90,48],[101,127,97],[33,101,32]],
   '6':[[219,167,212],[212,156,204],[202,154,193]],
   '7':[[80,60,150],[67,52,135]],
-  '8':[[215,188,144],[156,141,110],[178,157,111],[164,134,92]],
-  '9':[[152,153,148],[146,139,136],[122,118,115]],
+  '8':[[236,213,177],[223,188,133],[215,188,144],[198,170,115],[156,141,110],[178,157,111],[164,134,92],[134,112,82]],
+  '9':[[203,196,193],[166,165,163],[159,159,153],[152,153,148],[146,139,136],[122,118,115]],
   '10':[[179,107,103],[142,75,70],[156,55,59],[149,85,76]]
  };
  function classify([r,g,b]){
@@ -62,11 +62,14 @@ function autoRecognizeGame(canvas){
    if(g>=144&&(r>=94||b>=88))return '3';
    if(g<151&&r<97&&b<90)return '5';
   }
+  // Prefer actual warm beige tile backgrounds (including shaded edges).
+  // Hidden brown layers are darker, so a muted beige must not become '?'.
+  if(r>=128&&g>=105&&b>=77&&r>g+7&&g>b+17&&g-b<=65&&r-g<=75)return '8';
   if(g>=r+3&&Math.abs(g-b)<19&&r+g+b<345)return '_';
   // Empty glass is neutral dark green, not a hidden brown layer.
   if(Math.max(r,g,b)<=110&&Math.abs(r-g)<22&&Math.abs(g-b)<24&&(b>=r-6||g>=r-1))return '_';
-  if(r>50&&r<145&&r-g>11&&g-b>1&&g-b<29&&g<113&&b<94)return '?';
-  if(Math.abs(r-g)<13&&Math.abs(g-b)<15&&r>111&&r<190)return '9';
+  if(r>50&&r<130&&r-g>11&&g-b>1&&g-b<29&&g<100&&b<83)return '?';
+  if(Math.abs(r-g)<15&&Math.abs(g-b)<17&&r>111&&r<230)return '9';
   let bestType='X',bestDist=Infinity;
   for(const [name,samples] of Object.entries(reference))
    for(const p of samples){
@@ -100,6 +103,10 @@ function autoRecognizeGame(canvas){
    // require more than one independent dark-green sample to override it.
    if(votes.has('3')&&votes.has('5')&&votes.get('5')>=2&&
       votes.get('5')>=votes.get('3')-1)return '5';
+   // Beige shaded borders often touch the brown hidden cell below.
+   // Require two genuinely beige margins before correcting a '?' vote.
+   if(votes.has('8')&&votes.has('?')&&votes.get('8')>=2&&
+      votes.get('8')>=votes.get('?')-1)return '8';
    if(ranked[0][1]>=3&&ranked[0][1]>=(ranked[1]?.[1]||0)+1)
     return ranked[0][0];
   }
@@ -270,12 +277,12 @@ function autoRecognizeGame(canvas){
    const centers=Array.from({length:n},(_,i)=>
     175+detected.shift+correction+(i-(n-1)/2)*50);
    const strengths=centers.map(x=>strength(x,detected.bottom));
-   if(Math.min(...strengths)<17)continue;
+   if(Math.min(...strengths)<13)continue;
    const score=strengths.reduce((a,b)=>a+Math.max(0,b-15),0);
    candidates.push({n,centers,xshift:0,score,geometry:detected});
   }
   candidates.sort((a,b)=>b.score-a.score);
-  let uncertain=null;
+  let uncertain=null, bestValid=null;
   for(const chosen of candidates)for(const dy of [0,-2,2,-4,4]){
    const found=scanCandidate(chosen,0,dy);
    const total=found.state.reduce((n,t)=>n+t.length,0);
@@ -285,12 +292,24 @@ function autoRecognizeGame(canvas){
    const plausible=total%4===0&&total>=8&&
     Object.keys(knownCounts).length<=total/4&&
     Object.values(knownCounts).every(n=>n<=4);
-   if(found.valid&&plausible)return found;
+   if(found.valid&&plausible){
+     // Initial masked boards normally include exactly two empty working tubes.
+     // Never discard those just because the three occupied lower tubes have
+     // much stronger colored edges than the two empty glass outlines.
+     const opening=found.hidden>=found.filled*2&&found.filled>=6;
+     const spare=found.count-found.filled;
+     const quality=(opening? 120-Math.abs(spare-2)*100:0)+
+       found.count*2+chosen.score*.03-Math.abs(dy)*.5;
+     if(!bestValid||quality>bestValid.quality)
+       bestValid={found,quality};
+     continue;
+   }
    // A partial 12-tube read is preferable to a confidently wrong 8-tube read.
    if((!uncertain||found.count>uncertain.count||found.count===uncertain.count&&
       found.bad+found.unknownTop<uncertain.bad+uncertain.unknownTop)&&
       (plausible||found.count===12))uncertain=found;
   }
+  if(bestValid)return bestValid.found;
   if(uncertain)return {...uncertain,valid:false,reason:'Проверь неуверенные слои; все найденные колбочки сохранены'};
  }
 
