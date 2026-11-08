@@ -23,6 +23,18 @@ function begin(s,forceNew=false){
 function attach(s){
  return !!level&&s.length===level.positions.length&&s.every((t,i)=>t.length===level.positions[i].length&&t.every((v,j)=>!real(level.learned[level.positions[i][j]])||v===level.learned[level.positions[i][j]]))
 }
+// Snapshots keep the identity and original position of every piece, not just colors.
+function snapshot(){return level?clone(level):null}
+function restore(saved,{retainDiscoveries=false}={}){
+ if(!saved||!Array.isArray(saved.original)||!Array.isArray(saved.positions)||
+    !saved.learned||saved.positions.length!==saved.original.length)return false;
+ const restored=clone(saved);
+ if(retainDiscoveries&&level&&JSON.stringify(restored.original)===JSON.stringify(level.original)){
+  for(const [token,value] of Object.entries(level.learned||{}))
+   if(real(value))restored.learned[token]=value;
+ }
+ level=restored;save();return true;
+}
 function edit(i,j,value,removed=false){
  if(!level||!level.positions[i])return false;
  if(removed){if(j===level.positions[i].length-1)level.positions[i].pop();save();return true}
@@ -42,5 +54,5 @@ function decorate(s){return !level?clone(s):s.map((t,i)=>t.map((v,j)=>v==="?"&&r
 function restart(){if(!level)return null;level.positions=identity(level.original);level.moves=0;save();return clone(original())}
 const hasLevel=()=>!!level&&level.original.some(t=>t.length);
 const info=()=>level?{known:knownCount(),moves:level.moves,tubes:level.original.length}:null;
-root.JuiceMemory={begin,attach,edit,move,decorate,restart,knownCount,hasLevel,info};
+root.JuiceMemory={begin,attach,edit,move,decorate,restart,knownCount,hasLevel,info,snapshot,restore};
 })(typeof window!=="undefined"?window:globalThis);
