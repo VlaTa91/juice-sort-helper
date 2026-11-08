@@ -15,6 +15,22 @@ if(!b.length){if(firstEmpty===-1)firstEmpty=j;if(j!==firstEmpty)continue;}
 const amt=Math.min(run,cap-b.length);if(amt>0)out.push([i,j,amt]);
 }}return out}
 function move(s,m){const t=copy(s),[a,b,n]=m;for(let k=0;k<n;k++)t[b].push(t[a].pop());return t}
+// When reciprocal pours reveal equally unknown layers, moving from the
+// shorter tube into the longer one reduces stranded pieces and frees space
+// earlier. Keep the alternative when it provides different information.
+function preferCompactMoves(s,moves){
+ return moves.filter(m=>{
+  const [i,j,n]=m,a=s[i],b=s[j];
+  if(!a.length||!b.length||a.length<=b.length||a.at(-1)!==b.at(-1))return true;
+  const reverse=moves.some(r=>r[0]===j&&r[1]===i&&r[2]===n);
+  if(!reverse)return true;
+  const exposedA=a.length>n?a[a.length-n-1]:null;
+  const exposedB=b.length>n?b[b.length-n-1]:null;
+  // Avoid pruning a move with better information or a different block depth.
+  return exposedA!==exposedB||exposedA!=="?";
+ });
+}
+
 function rngSeed(seed){let v=(seed>>>0)||1;return()=>{v^=v<<13;v^=v>>>17;v^=v<<5;return (v>>>0)/4294967296}}
 function seedOf(s){let h=2166136261;for(const c of key(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
 function deck(s,cap,palette){const filled=s.reduce((n,t)=>n+t.length,0),hidden=unknown(s),nColors=filled/cap;
@@ -33,6 +49,8 @@ if(no[i].at(-1)==="?"){reveal=nw[i].at(-1);no[i][no[i].length-1]=reveal}
 return {obs:no,world:nw,reveal}}
 function moveScore(s,m,cap){const [i,j,n]=m,a=s[i],b=s[j],v=a.at(-1);let score=0;
 if(a.length>n&&a[a.length-n-1]==="?")score+=15;
+// Prefer reducing a shorter partially solved tube when both stacks match.
+if(b.length&&a.at(-1)===b.at(-1))score+=(b.length-a.length)*3;
 if(b.length)score+=8+n*1.4;else score-=2;
 if(b.length+n===cap&&b.length&&b.every(x=>x===v))score+=8;
 if(a.length===n&&b.length)score+=7;
@@ -61,8 +79,9 @@ const visited=new Set((options.visited||[]).map(v=>{
 try{return typeof v==="string"&&v.startsWith("[")?key(JSON.parse(v)):v}catch(e){return v}}));
 const allMoves=legal(s,cap);
 const fresh=allMoves.filter(m=>!visited.has(key(move(s,m))));
-const spare=s.filter(t=>!t.length).length,merges=fresh.filter(m=>s[m[1]].length>0);
-const available=spare===1&&merges.length?merges:fresh;
+const compact=preferCompactMoves(s,fresh);
+const spare=s.filter(t=>!t.length).length,merges=compact.filter(m=>s[m[1]].length>0);
+const available=spare===1&&merges.length?merges:compact;
 if(!available.length)return {move:null,reason:"no-legal"};
 const distribution=deck(s,cap,options.palette||[]);
 if(!distribution)return {move:null,reason:"invalid-counts"};
@@ -104,5 +123,5 @@ return {move:ranked[0]?.move||null,reason:"belief-mcts",distribution:{
 types:distribution.types,remaining:distribution.remaining,unknown:distribution.unknown,nColors:distribution.nColors},
 simulations,candidates:ranked,nodes:nodes.size}
 }
-g.JuicePlanner={choose,legal,move,after,deck,sample,solved,rngSeed};
+g.JuicePlanner={choose,legal,move,after,deck,sample,solved,rngSeed,preferCompactMoves};
 })(typeof window!=="undefined"?window:globalThis);
