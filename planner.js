@@ -55,7 +55,44 @@ function sample(s,bag,rng){const b=bag.slice();for(let i=b.length-1;i>0;i--){con
 function after(obs,world,m){const nw=move(world,m),no=move(obs,m),i=m[0];let reveal=null;
 if(no[i].at(-1)==="?"){reveal=nw[i].at(-1);no[i][no[i].length-1]=reveal}
 return {obs:no,world:nw,reveal}}
-function moveScore(s,m,cap){const [i,j,n]=m,a=s[i],b=s[j],v=a.at(-1);let score=0;
+// Systematic strategy learned from actual hidden-tube play. A free tube is
+// working space, not a goal by itself; group completion and future access matter.
+function topPresence(s,color){return s.reduce((n,t)=>n+(t.length&&t.at(-1)===color?1:0),0)}
+function strategicValue(s,m,cap){
+ const [i,j,n]=m,from=s[i],to=s[j],color=from.at(-1);
+ const emptiesBefore=s.filter(t=>!t.length).length;
+ const next=move(s,m),source=next[i],target=next[j];
+ const emptiesAfter=next.filter(t=>!t.length).length;
+ let score=0;
+ if(to.length){
+  score+=16+7*(target.length-1);
+  if(target.length===cap&&target.every(v=>v===color))score+=21;
+ }else{
+  score+=4*Math.min(5,topPresence(s,color))+3*Math.max(0,n-1);
+ }
+ if(!source.length&&to.length)score+=30;
+ if(!source.length&&!to.length)score-=30;
+ if(source.at(-1)==="?")score+=7;
+ if(source.length&&source.at(-1)!=="?"&&next.some((t,k)=>k!==i&&t.length<cap&&t.at(-1)===source.at(-1)))score+=9;
+ score+=23*(emptiesAfter-emptiesBefore);
+ if(emptiesBefore===1&&emptiesAfter===0)score-=18;
+ if(from.length===cap&&from.every(v=>v===color)&&!to.length)score-=70;
+ if(to.length&&from.length<to.length)score+=3;
+ return score;
+}
+// On a fresh board with no available merge, open the most frequent visible
+// top color; use the earliest tube as a reproducible tie-breaker. Never
+// commit to a second speculative pour before observing the first reveal.
+function systematicOpening(s,moves){
+ if(moves.some(m=>s[m[1]].length))return null;
+ const candidates=moves.filter(m=>!s[m[1]].length&&s[m[0]].length>m[2]);
+ candidates.sort((a,b)=>{
+  const freq=topPresence(s,s[b[0]].at(-1))-topPresence(s,s[a[0]].at(-1));
+  return freq||a[0]-b[0]||a[1]-b[1];
+ });
+ return candidates[0]||null;
+}
+function moveScore(s,m,cap){const [i,j,n]=m,a=s[i],b=s[j],v=a.at(-1);let score=strategicValue(s,m,cap);
 if(a.length>n&&a[a.length-n-1]==="?")score+=15;
 // Prefer reducing a shorter partially solved tube when both stacks match.
 if(b.length&&a.at(-1)===b.at(-1))score+=(b.length-a.length)*3;
@@ -64,7 +101,7 @@ if(b.length+n===cap&&b.length&&b.every(x=>x===v))score+=8;
 if(a.length===n&&b.length)score+=7;
 if(a.length===n&&!b.length)score-=18;
 if(a.length===cap&&a.every(x=>x===v)&&!b.length)score-=40;
-if(!b.length&&s.filter(t=>!t.length).length===1)score-=30;
+// The last empty tube is penalized by strategicValue but never forbidden.
 return score}
 function evaluate(obs,initialUnknown,cap,steps){if(solved(obs,cap))return 100-steps*.4;
 const moves=legal(obs,cap);if(!moves.length)return -95;
@@ -87,9 +124,8 @@ const visited=new Set((options.visited||[]).map(v=>{
 try{return typeof v==="string"&&v.startsWith("[")?key(JSON.parse(v)):v}catch(e){return v}}));
 const allMoves=legal(s,cap);
 const fresh=allMoves.filter(m=>!visited.has(key(move(s,m))));
-const compact=preferCompactMoves(s,fresh);
-const spare=s.filter(t=>!t.length).length,merges=compact.filter(m=>s[m[1]].length>0);
-const available=spare===1&&merges.length?merges:compact;
+// Evaluate every unvisited legal move, including moves into the last empty tube.
+const available=fresh;
 if(!available.length)return {move:null,reason:"no-legal"};
 const distribution=deck(s,cap,options.palette||[]);
 if(!distribution)return {move:null,reason:"invalid-counts"};
@@ -101,7 +137,9 @@ if(completed.length){
  });
  return {move:completed[0],reason:"guaranteed-completion",distribution,simulations:0};
 }
-if(!distribution.unknown){const sorted=available.map(m=>({m,score:moveScore(s,m,cap)})).sort((a,b)=>b.score-a.score);
+const opening=systematicOpening(s,available);
+if(opening&&distribution.unknown)return {move:opening,reason:"systematic-opening",distribution,simulations:0};
+if(!distribution.unknown){const sorted=available.map(m=>({m,score:moveScore(s,m,cap)})).sort((a,b)=>b.score-a.score||a.m[0]-b.m[0]||a.m[1]-b.m[1]);
 return {move:sorted[0].m,reason:"visible-only",distribution,simulations:0}}
 const maxDepth=Math.max(6,Math.min(34,options.depth||22));
 const simulations=Math.max(40,Math.min(2000,options.simulations||340));
@@ -134,10 +172,13 @@ if(reward<=-90)e.action.dead++;if(reward>=80)e.action.win++;if(e.revealed)e.acti
 }
 const ranked=root.actions.filter(a=>a.n>0).map(a=>({move:a.m,visits:a.n,value:a.q/a.n,
 deadRate:a.dead/a.n,winRate:a.win/a.n,immediateRevealRate:a.reveals/a.n}))
-.sort((a,b)=>(b.value-80*b.deadRate)-(a.value-80*a.deadRate));
+.sort((a,b)=>{
+ const rank=c=>c.winRate*105-c.deadRate*120+c.value*.25+strategicValue(s,c.move,cap)*.65;
+ return rank(b)-rank(a)||a.move[0]-b.move[0]||a.move[1]-b.move[1];
+ });
 return {move:ranked[0]?.move||null,reason:"belief-mcts",distribution:{
 types:distribution.types,remaining:distribution.remaining,unknown:distribution.unknown,nColors:distribution.nColors},
 simulations,candidates:ranked,nodes:nodes.size}
 }
-g.JuicePlanner={choose,legal,move,after,deck,sample,solved,rngSeed,preferCompactMoves,guaranteedCompletion};
+g.JuicePlanner={choose,legal,move,after,deck,sample,solved,rngSeed,preferCompactMoves,guaranteedCompletion,strategicValue,systematicOpening};
 })(typeof window!=="undefined"?window:globalThis);
