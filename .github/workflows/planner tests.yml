@@ -4,6 +4,8 @@ on:
     paths:
       - "planner.js"
       - "scanner.js"
+      - "index.html"
+      - "sw.js"
       - "journal.js"
       - "memory.js"
       - "tests/planner tests.js"
